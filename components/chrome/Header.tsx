@@ -2,10 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { useLoaderGate } from "@/components/providers/LoaderGate";
 import { cn } from "@/lib/cn";
 import { site } from "@/content/site";
-import { MobileMenu } from "./MobileMenu";
+
+// framer-motion lives only in the mobile overlay; load it as its own client
+// chunk so it stays out of the initial bundle on every device.
+const MobileMenu = dynamic(() => import("./MobileMenu").then((m) => m.MobileMenu), { ssr: false });
 
 /** Minimal running header. Fades in after reveal; hides on scroll-down. */
 export function Header() {
@@ -70,10 +74,16 @@ export function Header() {
     const settle = window.setTimeout(measure, 1200);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
+    // late layout shifts (images/fonts settling, lazy content) move every band
+    // below them; re-measure on body size changes so the nav theme never
+    // mis-samples (e.g. dark-on-dark) after below-the-fold content settles.
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(() => measure()) : null;
+    ro?.observe(document.body);
     return () => {
       window.clearTimeout(settle);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
+      ro?.disconnect();
     };
   }, []);
 

@@ -25,16 +25,17 @@ yarn-error.log*
 .vercel
 
 # internal docs / private notes (kept local; not part of the public repo).
-# README.md and SECURITY.md are intentionally NOT ignored and do ship.
+# Only README.md ships publicly; SECURITY.md is internal-only.
 /CLAUDE.md
 /MEMORY.md
 /CHANGELOG.md
 /DESIGN_SYSTEM.md
+/SECURITY.md
 /docs/
 /.verify-shots/
 /.remember/
 
 # large source assets (used to derive the web assets; not part of the build)
 /*.mp4
+/*.png
 /Carltsolas_Engineering_investor_presentation.pptx
-/Top-Down Vessel & Wake.png

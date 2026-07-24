@@ -54,7 +54,15 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === "production" ? { exclude: ["error"] } : false,
   },
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    // Long-cache the immutable self-hosted font; media (posters + video) gets a
+    // shorter cache with stale-while-revalidate so re-encodes still propagate.
+    const fontCache = "public, max-age=31536000, immutable";
+    const mediaCache = "public, max-age=86400, stale-while-revalidate=604800";
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      { source: "/fonts/:path*", headers: [{ key: "Cache-Control", value: fontCache }] },
+      { source: "/video/:path*", headers: [{ key: "Cache-Control", value: mediaCache }] },
+    ];
   },
 };
 

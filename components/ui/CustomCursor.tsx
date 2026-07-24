@@ -3,10 +3,13 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/useReducedMotion";
+import { useIsMobile } from "@/lib/useIsMobile";
 
-/** Lagged dot + ring cursor. Desktop/fine-pointer only; off for reduced motion. */
+/** Lagged dot + ring cursor. Desktop/fine-pointer only; off for reduced motion
+ *  and on touch (so the inert mix-blend nodes never enter the mobile DOM). */
 export function CustomCursor() {
   const reduced = useReducedMotion();
+  const isMobile = useIsMobile();
   const dot = useRef<HTMLDivElement>(null);
   const ring = useRef<HTMLDivElement>(null);
 
@@ -53,7 +56,7 @@ export function CustomCursor() {
     };
   }, [reduced]);
 
-  if (reduced) return null;
+  if (reduced || isMobile) return null;
 
   return (
     <>

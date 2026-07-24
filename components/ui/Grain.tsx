@@ -1,11 +1,14 @@
 "use client";
 
 import { useReducedMotion } from "@/lib/useReducedMotion";
+import { useIsMobile } from "@/lib/useIsMobile";
 
-/** Animated film-grain overlay — the cheapest "cinematic" signal. */
+/** Animated film-grain overlay — the cheapest "cinematic" signal. Desktop only:
+ *  the animated SVG turbulence + full-screen blend is too costly for mobile GPUs. */
 export function Grain() {
   const reduced = useReducedMotion();
-  if (reduced) return null;
+  const isMobile = useIsMobile();
+  if (reduced || isMobile) return null;
 
   return (
     <div

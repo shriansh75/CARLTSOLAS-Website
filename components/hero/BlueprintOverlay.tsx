@@ -12,8 +12,8 @@ export function BlueprintOverlay() {
       <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-ink/12 to-transparent" />
       {/* short hard anchor only where the wordmark sits */}
       <div className="absolute inset-x-0 bottom-0 h-[30%] bg-gradient-to-t from-ink/78 to-transparent" />
-      {/* top header scrim */}
-      <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-ink/48 via-ink/10 to-transparent" />
+      {/* top header scrim — a touch stronger so the nav links stay legible */}
+      <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-ink/62 via-ink/16 to-transparent" />
       {/* soft vignette */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_54%,rgba(8,16,32,0.22)_100%)]" />
       {/* blueprint grid texture */}

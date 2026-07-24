@@ -10,6 +10,10 @@ let registered = false;
 export function registerGsap(): void {
   if (registered || typeof window === "undefined") return;
   gsap.registerPlugin(ScrollTrigger, ScrambleTextPlugin);
+  // iOS Safari fires resize continuously as the URL bar shows/hides while
+  // scrolling; without this every ScrollTrigger re-measures mid-gesture and
+  // reflows the page, which was a primary source of the mobile scroll jank.
+  ScrollTrigger.config({ ignoreMobileResize: true });
   registered = true;
 }
 

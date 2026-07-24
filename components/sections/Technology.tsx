@@ -5,7 +5,6 @@ import { TextReveal } from "@/components/ui/TextReveal";
 import { Reveal } from "@/components/ui/Reveal";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { TickFrame } from "@/components/ui/TickFrame";
-import { TechCenterpiece } from "@/components/three/TechCenterpiece";
 import { site } from "@/content/site";
 
 /** Technology section — CARLTSOLAS's two production-ready software offerings.
@@ -19,13 +18,6 @@ export function Technology() {
         className="u-grid-bg pointer-events-none absolute inset-0 opacity-30 [mask-image:radial-gradient(ellipse_at_bottom,black,transparent_70%)]"
         aria-hidden
       />
-      {/* WebGL blueprint centerpiece (fallback-first, reduced-motion safe) */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.72] [mask-image:radial-gradient(ellipse_62%_74%_at_50%_46%,black,transparent)]"
-        aria-hidden
-      >
-        <TechCenterpiece />
-      </div>
       <div className="u-shell relative py-[clamp(5rem,12vh,10rem)]">
         <SectionIndex label={t.eyebrow} variant="onDark" className="mb-10" />
 

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { registerGsap, gsap, ScrollTrigger } from "@/lib/gsap";
 import { EASE } from "@/lib/motion";
 import { useReducedMotion } from "@/lib/useReducedMotion";
+import { useIsMobile } from "@/lib/useIsMobile";
 import { useMotionHold } from "@/components/providers/MotionHold";
 import { cn } from "@/lib/cn";
 
@@ -18,14 +19,20 @@ interface MarqueeProps {
 }
 
 /**
- * Duplicated-track marquee driven by GSAP (xPercent 0 to -50, mechanical ease)
- * with a scroll-velocity skew. Pauses on hover, on keyboard focus within, under
- * the global motion hold, and offscreen. Reduced motion renders a static strip.
- * Ported from the SOLAS MODU sibling.
+ * Duplicated-track marquee driven by GSAP (xPercent 0 to -50, mechanical ease).
+ * Pauses on hover, on keyboard focus within, under the global motion hold, and
+ * offscreen. Reduced motion renders a static strip.
+ *
+ * The desktop scroll-velocity skew is applied to a SEPARATE wrapper from the
+ * xPercent loop (never a shared target) and driven by one persistent quickTo, so
+ * it can never overwrite or churn the loop. The previous version animated skewX
+ * on the same element as the loop with `overwrite:true`, which killed the loop on
+ * the first scroll — the "carousel stopped animating" bug. Skew is desktop-only.
  */
 export function Marquee({ children, duration = 32, maxSkew = 6, className, trackClassName }: MarqueeProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
+  const isMobile = useIsMobile();
   const { held } = useMotionHold();
   const [paused, setPaused] = useState(false);
   const tweenRef = useRef<gsap.core.Tween | null>(null);
@@ -36,6 +43,7 @@ export function Marquee({ children, duration = 32, maxSkew = 6, className, track
     const root = rootRef.current;
     if (!root || reduced) return;
     const track = root.querySelector<HTMLElement>("[data-marquee-track]");
+    const skew = root.querySelector<HTMLElement>("[data-marquee-skew]");
     if (!track) return;
 
     const ctx = gsap.context(() => {
@@ -51,31 +59,20 @@ export function Marquee({ children, duration = 32, maxSkew = 6, className, track
         },
       });
 
-      const proxy = { skew: 0 };
-      const clamp = gsap.utils.clamp(-maxSkew, maxSkew);
-      ScrollTrigger.create({
-        onUpdate: (self) => {
-          if (!visibility.isActive) return;
-          const skew = clamp(self.getVelocity() / -300);
-          if (Math.abs(skew) > Math.abs(proxy.skew)) {
-            proxy.skew = skew;
-            gsap.to(track, {
-              skewX: skew,
-              duration: 0.5,
-              ease: EASE.soft,
-              overwrite: true,
-              onComplete: () => {
-                gsap.to(track, { skewX: 0, duration: 0.6, ease: EASE.soft });
-                proxy.skew = 0;
-              },
-            });
-          }
-        },
-      });
+      // scroll-velocity skew: desktop only, on its own wrapper, single quickTo
+      if (skew && !isMobile) {
+        const clamp = gsap.utils.clamp(-maxSkew, maxSkew);
+        const setSkew = gsap.quickTo(skew, "skewX", { duration: 0.5, ease: EASE.soft });
+        ScrollTrigger.create({
+          onUpdate: (self) => {
+            setSkew(visibility.isActive ? clamp(self.getVelocity() / -300) : 0);
+          },
+        });
+      }
     }, root);
     return () => ctx.revert();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reduced, duration, maxSkew]);
+  }, [reduced, isMobile, duration, maxSkew]);
 
   useEffect(() => {
     pausedRef.current = held || paused;
@@ -98,10 +95,12 @@ export function Marquee({ children, duration = 32, maxSkew = 6, className, track
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
-      <div data-marquee-track className={cn("flex w-max items-center will-change-transform", trackClassName)}>
-        <div className="flex shrink-0 items-center">{children}</div>
-        <div className="flex shrink-0 items-center" aria-hidden>
-          {children}
+      <div data-marquee-skew>
+        <div data-marquee-track className={cn("flex w-max items-center will-change-transform", trackClassName)}>
+          <div className="flex shrink-0 items-center">{children}</div>
+          <div className="flex shrink-0 items-center" aria-hidden>
+            {children}
+          </div>
         </div>
       </div>
     </div>

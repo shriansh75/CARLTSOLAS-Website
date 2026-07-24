@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { registerGsap, gsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/useReducedMotion";
+import { useIsMobile } from "@/lib/useIsMobile";
 import { useLoaderGate } from "@/components/providers/LoaderGate";
 import { cn } from "@/lib/cn";
 import { site } from "@/content/site";
@@ -14,9 +15,16 @@ export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
-    if (reduced) return;
+    // Mobile shows a static poster (no video), so skip the scale/parallax scrub
+    // entirely — scaling a full-screen media layer every scroll frame is one of
+    // the most expensive mobile effects. Desktop uses scrub:true (position maps
+    // straight to scroll, no catch-up tween) so the heavy video layer never keeps
+    // recompositing after the gesture stops — a numeric scrub reintroduced a
+    // slight scroll trail here.
+    if (reduced || isMobile) return;
     registerGsap();
     const ctx = gsap.context(() => {
       const trigger = { trigger: sectionRef.current, start: "top top", end: "bottom top", scrub: true } as const;
@@ -24,11 +32,11 @@ export function Hero() {
       gsap.to(".hero-content", { yPercent: -6, opacity: 0.12, ease: "none", scrollTrigger: trigger });
     }, sectionRef);
     return () => ctx.revert();
-  }, [reduced]);
+  }, [reduced, isMobile]);
 
   return (
     <section ref={sectionRef} className="relative h-[100svh] w-full overflow-hidden bg-ink" id="top" data-nav-theme="dark">
-      <div ref={mediaRef} className="absolute inset-0 will-change-transform">
+      <div ref={mediaRef} className={cn("absolute inset-0", !reduced && !isMobile && "will-change-transform")}>
         <HeroVideo />
       </div>
       <BlueprintOverlay />

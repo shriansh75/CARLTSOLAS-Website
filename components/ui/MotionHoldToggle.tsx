@@ -3,17 +3,20 @@
 import { useMotionHold } from "@/components/providers/MotionHold";
 import { useLoaderGate } from "@/components/providers/LoaderGate";
 import { useReducedMotion } from "@/lib/useReducedMotion";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 /**
  * Accessible global pause for ambient motion (WCAG 2.2.2). Fixed, subtle, mono.
- * Only shown after the loader reveals; hidden under reduced motion, where no
- * ambient effect runs in the first place.
+ * Only shown after the loader reveals; hidden under reduced motion and on mobile,
+ * where the ambient layer (video, WebGL, grain, marquee skew) does not run, so
+ * there is nothing to pause.
  */
 export function MotionHoldToggle() {
   const { held, toggle } = useMotionHold();
   const { revealed } = useLoaderGate();
   const reduced = useReducedMotion();
-  if (reduced || !revealed) return null;
+  const isMobile = useIsMobile();
+  if (reduced || isMobile || !revealed) return null;
 
   return (
     <button

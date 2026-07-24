@@ -51,7 +51,7 @@ export function TextReveal({
     if (!targets.length) return;
 
     if (reduced) {
-      gsap.set(targets, { yPercent: 0, opacity: 1 });
+      gsap.set(targets, { yPercent: 0, opacity: 1, willChange: "auto" });
       return;
     }
 
@@ -63,6 +63,8 @@ export function TextReveal({
         ease: EASE.expo,
         stagger,
         delay,
+        // release the compositor layer once the word has landed (mobile layer budget)
+        onComplete: () => gsap.set(targets, { willChange: "auto" }),
       });
 
     if (typeof play === "boolean") {

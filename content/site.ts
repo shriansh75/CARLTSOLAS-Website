@@ -19,7 +19,12 @@ export const site = {
     posterWebp: "/video/hero-poster.webp",
     durationMs: 15040,
     crossfadeMs: 600,
-    // one high-quality ~1080p encode served to every device (no mobile downscale)
+    // Desktop / fine-pointer: the ~1080p video below. Handheld / touch devices
+    // get this still instead of the heavy video (poster-only mobile hero).
+    mobilePoster: {
+      webp: "/video/hero-mobile.webp",
+      jpg: "/video/hero-mobile.jpg",
+    },
     sources: {
       webm: "/video/hero.webm",
       mp4: "/video/hero.mp4",

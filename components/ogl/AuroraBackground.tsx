@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { LazyMount } from "@/components/ui/LazyMount";
 import { useReducedMotion } from "@/lib/useReducedMotion";
+import { useIsMobile } from "@/lib/useIsMobile";
 import { useMotionHold } from "@/components/providers/MotionHold";
 
 /** ogl stays out of the shared bundle: loaded on demand, client only. */
@@ -45,11 +46,12 @@ function AuroraLive() {
   );
 }
 
-/** OGL aurora background, fallback-first. Under reduced motion nothing mounts
- *  (the static bg-ink is the fallback). */
+/** OGL aurora background, fallback-first. Under reduced motion or on handheld /
+ *  touch devices nothing mounts (the static bg-ink is the fallback). */
 export function AuroraBackground() {
   const reduced = useReducedMotion();
-  if (reduced) return null;
+  const isMobile = useIsMobile();
+  if (reduced || isMobile) return null;
 
   return (
     <LazyMount rootMargin="200px" className="absolute inset-0">

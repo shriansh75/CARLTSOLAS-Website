@@ -6,6 +6,7 @@ import { registerGsap, gsap } from "@/lib/gsap";
 import { useLoaderGate } from "@/components/providers/LoaderGate";
 import { fontsReady, imagesReady, delay } from "@/lib/assetLoading";
 import { heroReady } from "@/lib/heroReadiness";
+import { MOBILE_QUERY } from "@/lib/useIsMobile";
 import { site } from "@/content/site";
 import { BlueprintHull } from "./BlueprintHull";
 import { LoaderReadout } from "./LoaderReadout";
@@ -17,6 +18,10 @@ const MIN_DURATION = 6600;
 /** Upper bound (ms) the loader waits for the full-quality hero video to buffer
  *  before revealing anyway, so it can never hang on a slow connection. */
 const HERO_TIMEOUT = 18000;
+
+/** Mobile is poster-only (no video to buffer), so the hero gate resolves on the
+ *  still — never keep a phone scroll-locked waiting on a clip it won't load. */
+const MOBILE_HERO_TIMEOUT = 6000;
 
 /**
  * "Blueprint-to-Render" preloader. Draws the hull body plan, ticks the drafting
@@ -54,6 +59,7 @@ export function Preloader() {
     registerGsap();
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isMobile = window.matchMedia(MOBILE_QUERY).matches;
 
     const counterEl = root.querySelector<HTMLElement>(".pl-counter");
     const setCounter = (v: number) => {
@@ -115,8 +121,8 @@ export function Preloader() {
 
     Promise.all([
       fontsReady(4000),
-      imagesReady([site.heroVideo.poster], 4000),
-      heroReady(HERO_TIMEOUT),
+      imagesReady([isMobile ? site.heroVideo.mobilePoster.jpg : site.heroVideo.poster], 4000),
+      heroReady(isMobile ? MOBILE_HERO_TIMEOUT : HERO_TIMEOUT),
       delay(MIN_DURATION),
     ])
       .then(() => {

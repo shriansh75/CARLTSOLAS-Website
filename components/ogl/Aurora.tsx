@@ -1,7 +1,7 @@
 "use client";
 
 import { Renderer, Program, Mesh, Color, Triangle } from "ogl";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * OGL aurora field, adapted from React Bits (MIT + Commons Clause) for the
@@ -125,13 +125,24 @@ interface AuroraProps {
   active?: boolean;
 }
 
+/** Convert the hex color stops to the [r,g,b] triples the shader wants. Hoisted
+ *  out of the render loop so it never allocates per frame (it did, from a const). */
+function toStops(colorStops: [string, string, string]): number[][] {
+  return colorStops.map((hex) => {
+    const c = new Color(hex);
+    return [c.r, c.g, c.b];
+  });
+}
+
 export function Aurora({ colorStops, amplitude = 1.0, blend = 0.5, speed = 0.6, active = true }: AuroraProps) {
   const ctnRef = useRef<HTMLDivElement>(null);
   const glRef = useRef<{ renderer: Renderer; program: Program; mesh: Mesh } | null>(null);
-  const propsRef = useRef({ colorStops, amplitude, blend, speed });
-  propsRef.current = { colorStops, amplitude, blend, speed };
+  const speedRef = useRef(speed);
+  speedRef.current = speed;
+  const lostRef = useRef(false);
+  const [gen, setGen] = useState(0);
 
-  // set up the OGL context once
+  // set up the OGL context (re-runs after a context-restore to rebuild the scene)
   useEffect(() => {
     const ctn = ctnRef.current;
     if (!ctn) return;
@@ -139,7 +150,7 @@ export function Aurora({ colorStops, amplitude = 1.0, blend = 0.5, speed = 0.6, 
     const renderer = new Renderer({
       alpha: true,
       premultipliedAlpha: true,
-      antialias: true,
+      antialias: false,
       dpr: Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 1, 1.5),
     });
     const gl = renderer.gl;
@@ -151,18 +162,13 @@ export function Aurora({ colorStops, amplitude = 1.0, blend = 0.5, speed = 0.6, 
     const geometry = new Triangle(gl);
     if (geometry.attributes.uv) delete geometry.attributes.uv;
 
-    const stops = colorStops.map((hex) => {
-      const c = new Color(hex);
-      return [c.r, c.g, c.b];
-    });
-
     const program = new Program(gl, {
       vertex: VERT,
       fragment: FRAG,
       uniforms: {
         uTime: { value: 0 },
         uAmplitude: { value: amplitude },
-        uColorStops: { value: stops },
+        uColorStops: { value: toStops(colorStops) },
         uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
         uBlend: { value: blend },
       },
@@ -179,35 +185,58 @@ export function Aurora({ colorStops, amplitude = 1.0, blend = 0.5, speed = 0.6, 
     };
     resize();
     window.addEventListener("resize", resize);
+
+    // recover from a dropped GL context (iOS memory pressure / GPU reset) instead
+    // of leaving a permanently blank canvas.
+    const canvas = gl.canvas;
+    const onLost = (e: Event) => {
+      e.preventDefault();
+      lostRef.current = true;
+    };
+    const onRestored = () => {
+      lostRef.current = false;
+      setGen((g) => g + 1);
+    };
+    canvas.addEventListener("webglcontextlost", onLost as EventListener);
+    canvas.addEventListener("webglcontextrestored", onRestored as EventListener);
+
     glRef.current = { renderer, program, mesh };
 
     return () => {
       window.removeEventListener("resize", resize);
-      if (gl.canvas.parentNode === ctn) ctn.removeChild(gl.canvas);
+      canvas.removeEventListener("webglcontextlost", onLost as EventListener);
+      canvas.removeEventListener("webglcontextrestored", onRestored as EventListener);
+      if (canvas.parentNode === ctn) ctn.removeChild(canvas);
       gl.getExtension("WEBGL_lose_context")?.loseContext();
       glRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [gen]);
 
-  // run the render loop only while active (in view, not held, tab visible)
+  // sync the visual uniforms on change (not per frame — the old loop allocated
+  // three Color objects every frame from a constant).
+  useEffect(() => {
+    const g = glRef.current;
+    if (!g) return;
+    g.program.uniforms.uAmplitude.value = amplitude;
+    g.program.uniforms.uBlend.value = blend;
+    g.program.uniforms.uColorStops.value = toStops(colorStops);
+  }, [amplitude, blend, colorStops, gen]);
+
+  // render loop only while active; clamped to ~60fps (ProMotion drives rAF at 120)
   useEffect(() => {
     if (!active) return;
     let raf = 0;
     const start = performance.now();
+    const FRAME_MS = 1000 / 60;
+    let last = -Infinity;
     const loop = (t: number) => {
       raf = requestAnimationFrame(loop);
+      if (t - last < FRAME_MS) return;
+      last = t;
       const g = glRef.current;
-      if (!g) return;
-      const p = propsRef.current;
-      const elapsed = (t - start) * 0.01;
-      g.program.uniforms.uTime.value = elapsed * p.speed * 0.1;
-      g.program.uniforms.uAmplitude.value = p.amplitude;
-      g.program.uniforms.uBlend.value = p.blend;
-      g.program.uniforms.uColorStops.value = p.colorStops.map((hex) => {
-        const c = new Color(hex);
-        return [c.r, c.g, c.b];
-      });
+      if (!g || lostRef.current) return;
+      g.program.uniforms.uTime.value = (t - start) * 0.01 * speedRef.current * 0.1;
       g.renderer.render({ scene: g.mesh });
     };
     raf = requestAnimationFrame(loop);
