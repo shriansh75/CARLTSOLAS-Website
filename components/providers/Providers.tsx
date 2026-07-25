@@ -15,8 +15,9 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <LoaderGateProvider>
       <MotionHoldProvider>
+        {/* #main exists on every route (home + legal); #top is hero-only */}
         <a
-          href="#top"
+          href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[110] focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-ink"
         >
           Skip to content

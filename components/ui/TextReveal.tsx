@@ -32,8 +32,8 @@ export function TextReveal({
   stagger = STAGGER.words,
   start = "top 82%",
 }: Props) {
-  // R3F's global JSX augmentation collapses bare ElementType JSX props to never,
-  // so typecheck Tag against the exact props this component passes. No runtime change.
+  // Typecheck Tag against the exact props this component passes, so a polymorphic
+  // `as` still accepts a ref. No runtime change.
   const Tag = ((as ?? "span") as ElementType) as FC<{
     ref: Ref<HTMLElement>;
     className?: string;

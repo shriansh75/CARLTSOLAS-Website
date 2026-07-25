@@ -26,7 +26,7 @@ export function LegalPage({
 
   return (
     <>
-      <main id="main">
+      <main id="main" tabIndex={-1}>
         <LegalPageHero
           eyebrow={content.eyebrow}
           heading={content.heading}

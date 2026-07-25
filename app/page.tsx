@@ -7,7 +7,8 @@ import { Footer } from "@/components/chrome/Footer";
 export default function Page() {
   return (
     <>
-      <main>
+      {/* id + tabIndex are the skip-link target; every route exposes #main */}
+      <main id="main" tabIndex={-1}>
         <Hero />
         <Positioning />
         <Technology />

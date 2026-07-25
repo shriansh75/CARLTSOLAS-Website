@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="CARLTSOLAS">
+  <!-- Ink ground. Reads on both light and dark browser chrome. -->
+  <rect width="64" height="64" rx="12" fill="#081020" />
+  <!-- C monogram as a drafted arc: a vector path, never <text>, because fonts do
+       not resolve in favicon rendering contexts. Butt caps keep the technical,
+       drawing-office feel of the blueprint identity. -->
+  <path
+    d="M45.02 18.98 A17 17 0 1 0 45.02 45.02"
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="9"
+  />
+</svg>

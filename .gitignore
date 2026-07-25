@@ -35,7 +35,8 @@ yarn-error.log*
 /.verify-shots/
 /.remember/
 
-# large source assets (used to derive the web assets; not part of the build)
+# source material + large masters (used to derive the site; not part of the build)
 /*.mp4
 /*.png
-/Carltsolas_Engineering_investor_presentation.pptx
+/*.pdf
+/*.pptx

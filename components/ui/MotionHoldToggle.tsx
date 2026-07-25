@@ -3,20 +3,19 @@
 import { useMotionHold } from "@/components/providers/MotionHold";
 import { useLoaderGate } from "@/components/providers/LoaderGate";
 import { useReducedMotion } from "@/lib/useReducedMotion";
-import { useIsMobile } from "@/lib/useIsMobile";
 
 /**
  * Accessible global pause for ambient motion (WCAG 2.2.2). Fixed, subtle, mono.
- * Only shown after the loader reveals; hidden under reduced motion and on mobile,
- * where the ambient layer (video, WebGL, grain, marquee skew) does not run, so
- * there is nothing to pause.
+ * Shown after the loader reveals, on every device: mobile drops the heavy layer
+ * (video, WebGL, grain, marquee skew) but still runs continuous animations, the
+ * marquee loop, the hero glint and the compass dial, so the pause control must
+ * stay reachable there. Hidden only under reduced motion, where nothing moves.
  */
 export function MotionHoldToggle() {
   const { held, toggle } = useMotionHold();
   const { revealed } = useLoaderGate();
   const reduced = useReducedMotion();
-  const isMobile = useIsMobile();
-  if (reduced || isMobile || !revealed) return null;
+  if (reduced || !revealed) return null;
 
   return (
     <button

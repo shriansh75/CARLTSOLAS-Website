@@ -24,8 +24,8 @@ interface DecodeProps {
  * readers; the animated copy is aria-hidden. Ported from the SOLAS MODU sibling.
  */
 export function Decode({ text, play, delay = 0, as: Tag = "span", className }: DecodeProps) {
-  // R3F's global JSX augmentation collapses bare ElementType JSX props to never,
-  // so typecheck against the exact props this component passes. No runtime change.
+  // Typecheck Tag against the exact props this component passes, so a polymorphic
+  // `as` still accepts a ref. No runtime change.
   const Comp = Tag as FC<{ ref: Ref<HTMLElement>; className?: string; children?: ReactNode }>;
   const ref = useRef<HTMLElement>(null);
   const doneRef = useRef(false);

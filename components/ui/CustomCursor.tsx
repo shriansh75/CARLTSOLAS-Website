@@ -54,7 +54,10 @@ export function CustomCursor() {
       document.removeEventListener("pointerleave", leave);
       document.documentElement.classList.remove("has-custom-cursor");
     };
-  }, [reduced]);
+    // isMobile is a dependency because the render gate below reads it: without
+    // it, crossing the breakpoint remounts the nodes but never re-attaches the
+    // listeners, leaving the effect bound to detached elements.
+  }, [reduced, isMobile]);
 
   if (reduced || isMobile) return null;
 
