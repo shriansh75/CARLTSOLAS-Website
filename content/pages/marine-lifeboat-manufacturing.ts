@@ -35,10 +35,32 @@ export const lifeboatManufacturingPage: ServicePageContent = {
   },
   breadcrumb: "HOME / MARINE / LIFEBOAT MANUFACTURING",
   eyebrow: "MAR 02 / LIFEBOAT MANUFACTURING",
-  heading: "Lifeboat manufacturing for India, built on knowing how they fail in service.",
+  heading: "A decade servicing survival craft. Now building them.",
   lede:
     "A declared initiative, not a product line. We are assembling the approvals, partners and capital required to manufacture SOLAS survival craft in India.",
-  schematic: "davit",
+  heroImage: {
+    // Totally enclosed lifeboats stowed in their davits. NEVER caption these
+    // as free-fall craft: free-fall boats launch down a stern ramp and carry
+    // no davit. The source filename is wrong; the photograph is not.
+    webp: "/images/marine/lifeboat-hero.webp",
+    jpg: "/images/marine/lifeboat-hero.jpg",
+    alt: "Totally enclosed lifeboats stowed in their davits along a ship's side, ready for launch.",
+  },
+  introImage: {
+    webp: "/images/marine/lifeboat-intro.webp",
+    jpg: "/images/marine/lifeboat-intro.jpg",
+    alt: "An enclosed lifeboat seated in its davit cradle on an offshore installation, open sea beyond.",
+  },
+  feature: {
+    images: [
+      {
+        webp: "/images/marine/lifeboat-service.webp",
+        jpg: "/images/marine/lifeboat-service.jpg",
+        alt: "A survey team attending a lifeboat at its davit, checking the launching appliance and release gear.",
+      },
+    ],
+    caption: "SERVICING · LOAD TESTING · RELEASE GEAR · INSTALLATION AND COMMISSIONING",
+  },
 
   intro: {
     eyebrow: "MAR 02.1 / POSITION",

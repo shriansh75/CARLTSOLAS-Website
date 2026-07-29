@@ -35,11 +35,25 @@ export const flagStateInspectionsPage: ServicePageContent = {
   heading: "Flag State Inspections for registries that hold their fleet to a standard.",
   lede:
     "Independent, convention-wide inspection of ships flying your flag, carried out by qualified surveyors and reported in a form your administration can act on.",
-  schematic: "vesselProfile",
   heroImage: {
     webp: "/images/marine/flag-state-inspections.webp",
     jpg: "/images/marine/flag-state-inspections.jpg",
     alt: "A ship's machinery space photographed along the length of the engine platform, showing cylinder heads, handrails and access stairs.",
+  },
+  introImage: {
+    webp: "/images/marine/fsi-intro.webp",
+    jpg: "/images/marine/fsi-intro.jpg",
+    alt: "Crew testing a fire main on deck, the jet arcing out over the water, seen from high above the vessel.",
+  },
+  feature: {
+    images: [
+      {
+        webp: "/images/marine/hull-survey.webp",
+        jpg: "/images/marine/hull-survey.jpg",
+        alt: "A vessel's hull and propeller below the waterline, lit from behind during an underwater survey.",
+      },
+    ],
+    caption: "HULL · MACHINERY · LIFE-SAVING · POLLUTION PREVENTION · MANAGEMENT SYSTEMS",
   },
 
   intro: {

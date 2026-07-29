@@ -82,10 +82,18 @@ export interface ServicePageContent {
   /** Optional hero photograph. Falls back to the blueprint treatment. */
   heroImage?: ServiceImage;
   /**
-   * Which naval-architecture drawing backs the hero (components/marine/
-   * schematics.tsx). Omit for the plain measurement grid.
+   * Sits under the heading in the light intro band, filling the column that
+   * would otherwise run empty beside the body copy.
    */
-  schematic?: "bodyPlan" | "vesselProfile" | "davit";
+  introImage?: ServiceImage;
+  /**
+   * Contained image band between sections. One image reads full width; two
+   * read as a pair. `caption` is a short mono line, not a sentence.
+   */
+  feature?: {
+    images: ServiceImage[];
+    caption?: string;
+  };
   intro: {
     eyebrow: string;
     heading: string;

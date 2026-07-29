@@ -9,7 +9,8 @@ import { NodeMarker } from "@/components/ui/NodeMarker";
 import { Decode } from "@/components/ui/Decode";
 import { Footer } from "@/components/chrome/Footer";
 import { CtaLink } from "./CtaLink";
-import type { ServicePageContent } from "@/content/types";
+import { cn } from "@/lib/cn";
+import type { ServiceImage, ServicePageContent } from "@/content/types";
 
 /**
  * Shared shell for every Marine route (the landing page and the two service
@@ -31,7 +32,6 @@ export function MarinePage({ content }: { content: ServicePageContent }) {
           lede={content.lede}
           breadcrumb={content.breadcrumb}
           image={content.heroImage}
-          schematic={content.schematic}
         />
 
         {/* intro, light surface */}
@@ -39,9 +39,19 @@ export function MarinePage({ content }: { content: ServicePageContent }) {
           <div className="u-shell py-[clamp(4.5rem,10vh,8rem)]">
             <SectionIndex index={intro.index} label={intro.label} variant="onLight" />
             <div className="mt-10 grid gap-x-16 gap-y-8 lg:grid-cols-12">
-              <h2 className="font-sans text-[clamp(1.5rem,3vw,2.5rem)] font-medium leading-[1.14] tracking-[-0.01em] text-navy lg:col-span-7">
-                <TextReveal text={content.intro.heading} stagger={0.022} />
-              </h2>
+              {/* The image lives INSIDE the heading column, not in a second
+                  grid row: a separate row starts below the taller body-copy
+                  column, which reopens the gap this is meant to close. */}
+              <div className="lg:col-span-7">
+                <h2 className="font-sans text-[clamp(1.5rem,3vw,2.5rem)] font-medium leading-[1.14] tracking-[-0.01em] text-navy">
+                  <TextReveal text={content.intro.heading} stagger={0.022} />
+                </h2>
+                {content.introImage ? (
+                  <Reveal className="mt-10" y={32}>
+                    <FramedImage image={content.introImage} ratio="aspect-[16/10]" />
+                  </Reveal>
+                ) : null}
+              </div>
               <Reveal className="flex flex-col gap-4 lg:col-span-5">
                 {content.intro.paragraphs.map((p) => (
                   <p key={p} className="text-[0.9375rem] leading-[1.75] text-slate">
@@ -65,6 +75,45 @@ export function MarinePage({ content }: { content: ServicePageContent }) {
             ) : null}
           </div>
         </section>
+
+        {/* image band, dark */}
+        {content.feature?.images.length ? (
+          <section data-nav-theme="dark" className="relative overflow-hidden bg-ink">
+            <div className="u-shell relative py-[clamp(3rem,7vh,5rem)]">
+              <Reveal
+                selector="[data-reveal]"
+                stagger={0.1}
+                className={cn(
+                  "grid gap-px overflow-hidden border border-[var(--hairline)] bg-[var(--hairline)]",
+                  content.feature.images.length > 1 && "md:grid-cols-2",
+                )}
+              >
+                {content.feature.images.map((img) => (
+                  <div key={img.jpg} data-reveal className="relative bg-ink">
+                    <picture>
+                      <source srcSet={img.webp} type="image/webp" />
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={img.jpg}
+                        alt={img.alt}
+                        loading="lazy"
+                        decoding="async"
+                        className="aspect-[3/2] w-full object-cover"
+                      />
+                    </picture>
+                  </div>
+                ))}
+              </Reveal>
+              {content.feature.caption ? (
+                <Reveal className="mt-5">
+                  <p className="font-mono text-[0.5625rem] uppercase tracking-[0.22em] text-meta">
+                    {content.feature.caption}
+                  </p>
+                </Reveal>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
 
         {/* service cards (landing page), dark */}
         {content.services ? (
@@ -266,6 +315,30 @@ export function MarinePage({ content }: { content: ServicePageContent }) {
       </main>
       <Footer />
     </>
+  );
+}
+
+/**
+ * Content image inside the drafting-bracket frame, so photography inherits the
+ * same visual language as the cards rather than floating loose in the layout.
+ * Below the fold by definition, hence lazy.
+ */
+function FramedImage({ image, ratio }: { image: ServiceImage; ratio: string }) {
+  return (
+    <div className="relative overflow-hidden border border-navy/10">
+      <TickFrame />
+      <picture>
+        <source srcSet={image.webp} type="image/webp" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={image.jpg}
+          alt={image.alt}
+          loading="lazy"
+          decoding="async"
+          className={cn("w-full object-cover", ratio)}
+        />
+      </picture>
+    </div>
   );
 }
 

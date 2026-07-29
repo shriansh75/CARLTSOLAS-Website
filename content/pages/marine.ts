@@ -16,11 +16,33 @@ export const marinePage: ServicePageContent = {
   heading: "Marine services, delivered with SOLAS MODU.",
   lede:
     "CARLTSOLAS is a technology company built on a marine engineering foundation. Where a project calls for marine and maritime work, we deliver it together with SOLAS MODU Marine Services.",
-  schematic: "bodyPlan",
   heroImage: {
-    webp: "/images/marine/marine-overview.webp",
-    jpg: "/images/marine/marine-overview.jpg",
-    alt: "Crew testing a fire main on the deck of an offshore support vessel, seen from above, with an enclosed lifeboat stowed alongside.",
+    // NOTE the filename: /images/* is served with a one-day cache, so an image
+    // whose content changes must take a NEW path. Overwriting the previous
+    // marine-overview.* served stale bytes to anyone who had visited before.
+    webp: "/images/marine/marine-rig.webp",
+    jpg: "/images/marine/marine-rig.jpg",
+    alt: "An offshore production platform standing in open sea, its flare boom lit against calm water.",
+  },
+  introImage: {
+    webp: "/images/marine/marine-intro.webp",
+    jpg: "/images/marine/marine-intro.jpg",
+    alt: "Two offshore crew in survival coveralls at the rail of a platform, looking out over the sea.",
+  },
+  feature: {
+    images: [
+      {
+        webp: "/images/marine/ndt-primary.webp",
+        jpg: "/images/marine/ndt-primary.jpg",
+        alt: "A technician taking an ultrasonic thickness reading on a steel structure with a handheld flaw detector.",
+      },
+      {
+        webp: "/images/marine/ndt-secondary.webp",
+        jpg: "/images/marine/ndt-secondary.jpg",
+        alt: "A technician inspecting a welded pipeline joint, with inspection marks recorded on the pipe coating.",
+      },
+    ],
+    caption: "NON-DESTRUCTIVE TESTING · THICKNESS MEASUREMENT · WELD AND COATING INSPECTION",
   },
 
   intro: {

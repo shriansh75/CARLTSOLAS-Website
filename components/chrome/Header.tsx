@@ -144,9 +144,25 @@ export function Header() {
           : "border-transparent bg-transparent",
       )}
     >
+      {/* Always-on scrim: nav links need contrast from the very first paint,
+          not only once scrolled. Taller than the bar so it falls off softly
+          instead of ending on a hard edge, and it fades out exactly as the
+          solid tint fades in so the two never stack into a heavy band.
+          Gradient only, never backdrop-filter. */}
+      <div
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-x-0 top-0 h-[170%] transition-opacity duration-500 ease-expo",
+          light
+            ? "bg-gradient-to-b from-surface/85 via-surface/45 to-transparent"
+            : "bg-gradient-to-b from-ink/70 via-ink/30 to-transparent",
+          scrolled ? "opacity-0" : "opacity-100",
+        )}
+      />
+
       <div
         className={cn(
-          "u-shell flex items-center justify-between py-5 transition-colors duration-300",
+          "u-shell relative flex items-center justify-between py-5 transition-colors duration-300",
           // The text shadow only earns its keep while the bar is transparent
           // over dark media; on the tinted bar it just muddies the type.
           light || scrolled ? "" : "[text-shadow:0_1px_3px_rgba(8,16,32,0.55)]",

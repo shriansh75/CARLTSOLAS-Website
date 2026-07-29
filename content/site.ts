@@ -100,16 +100,21 @@ export const site = {
     lede:
       "SOLAS, Safety of Life at Sea. MODU, Mobile Offshore Drilling Unit. Since 2013, SOLAS MODU Marine Services has delivered safety, compliance and integrity across ships, rigs, platforms and shipyards. This proven expertise is the marine foundation CARLTSOLAS builds on.",
     lines: [
-      { id: "S.01", title: "Surveys & Certifications", scope: "Class and Flag-State approved surveys, ISO and type approvals across statutory regimes." },
+      { id: "S.01", title: "Surveys & Certifications", scope: "Class and flag State survey attendance, statutory certification support and management system audits." },
       { id: "S.02", title: "Advanced NDT", scope: "UT, MPI, DP, radiography, LRUT and PAUT for hulls, pipelines, cranes and plant integrity." },
-      { id: "S.03", title: "Survival Systems", scope: "Certified service station for lifeboats, life rafts, HRUs, davits and immersion suits." },
+      { id: "S.03", title: "Survival Systems", scope: "Servicing, load testing and certification of lifeboats, liferafts, HRUs, davits and immersion suits." },
       { id: "S.04", title: "Project Management", scope: "New construction, repair, drydocking and offshore asset management, from contract to closeout." },
     ],
     marquee: ["UT", "LRUT", "PAUT", "MPI", "DP", "RADIOGRAPHY", "HARDNESS", "LSA", "FFA", "HRU", "IMMERSION SUITS", "DAVITS"],
+    // Every badge must be a CURRENT, third-party credential. Removed here:
+    // "2 FLAGS · ZMA · SKANREG" (the St Kitts appointment expired 26 Jun 2026
+    // and Zanzibar was a spent, vessel-specific 2022 authorisation, so no
+    // registry is named anywhere on the site), and "IADC ASSOCIATE MEMBER"
+    // (latest membership on file is 2019). See docs/solas-modu-capability-record.md.
     badges: [
       { k: "TRIPLE ISO", v: "9001 · 14001 · 45001" },
-      { k: "IADC", v: "ASSOCIATE MEMBER" },
-      { k: "2 FLAGS", v: "ZMA · SKANREG" },
+      { k: "ABS", v: "RECOGNIZED SERVICE SUPPLIER" },
+      { k: "IRS", v: "APPROVED SERVICE SUPPLIER" },
       { k: "SINCE 2013", v: "EXECUTING OFFSHORE" },
     ],
     distinction: {
