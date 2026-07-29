@@ -40,3 +40,16 @@ yarn-error.log*
 /*.png
 /*.pdf
 /*.pptx
+
+# CONFIDENTIAL working documents. Inspection reports and client records carry
+# vessel, commercial and crew personal data (passport and seaman's-book numbers,
+# dates of birth, certificates of competency). They are reference material only
+# and must never reach this public repository.
+/*.docx
+/*.doc
+/*.xlsx
+/*.xls
+/confidential/
+
+# Crash dumps from the MSYS/Git Bash toolchain. Local noise, never source.
+*.stackdump

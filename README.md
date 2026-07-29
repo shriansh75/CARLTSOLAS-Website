@@ -13,9 +13,15 @@ the SOLAS MODU network.
 
 A premium, fully responsive marketing site with a cinematic intro, a full-screen
 video hero, and sections covering the company, its technology offerings, and the
-SOLAS MODU foundation, alongside Privacy Policy and Terms & Conditions pages. The
-experience is tuned for performance and accessibility across desktop and mobile,
-and honors reduced-motion preferences throughout.
+SOLAS MODU foundation, alongside Privacy Policy and Terms & Conditions pages.
+
+A dedicated **Marine** section sets out the maritime services delivered with
+SOLAS MODU Marine Services: flag State inspections for ship registries, and a
+declared initiative to manufacture SOLAS survival craft in India.
+
+The experience is tuned for performance and accessibility across desktop and
+mobile. It honors reduced-motion preferences throughout, offers a global control
+to pause continuous motion, and is navigable by keyboard alone.
 
 ## Development
 

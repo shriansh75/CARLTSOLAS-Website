@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/cn";
 import { site } from "@/content/site";
+import { useReducedMotion } from "@/lib/useReducedMotion";
 
 type Lenis = { start: () => void; stop: () => void; scrollTo: (t: string, o?: object) => void };
 const getLenis = () => (window as unknown as { lenis?: Lenis }).lenis;
@@ -21,6 +22,14 @@ export function MobileMenu({ light }: { light: boolean }) {
   const panelRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const router = useRouter();
+  const reduced = useReducedMotion();
+  const uid = useId();
+  // Which parent entry has its children expanded. Collapsed by default so the
+  // list never overflows a short viewport, but pre-expanded when the visitor is
+  // already inside that section, which is where they most likely want to move.
+  const [expanded, setExpanded] = useState<string | null>(() =>
+    pathname.startsWith("/marine") ? "/marine" : null,
+  );
 
   // scroll lock + focus trap while open
   useEffect(() => {
@@ -72,6 +81,15 @@ export function MobileMenu({ light }: { light: boolean }) {
   }, []);
 
   const go = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    // Real route: close the overlay (which releases the scroll lock) and
+    // client-navigate. Without this the overlay would stay mounted while the
+    // browser performed a full document load.
+    if (href.startsWith("/")) {
+      e.preventDefault();
+      setOpen(false);
+      router.push(href);
+      return;
+    }
     if (!href.startsWith("#")) return; // let mailto: etc. behave normally
     e.preventDefault();
     setOpen(false);
@@ -138,21 +156,87 @@ export function MobileMenu({ light }: { light: boolean }) {
                 variants={{ show: { transition: { staggerChildren: 0.06, delayChildren: 0.15 } } }}
                 className="flex flex-col gap-1"
               >
-                {site.nav.map((n) => (
-                  <motion.li
-                    key={n.href}
-                    variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}
-                    transition={{ duration: 0.5, ease: EXPO }}
-                  >
-                    <a
-                      href={n.href}
-                      onClick={(e) => go(e, n.href)}
-                      className="block py-2 text-[clamp(2rem,11vw,3.5rem)] font-medium tracking-[-0.01em] text-white transition-colors hover:text-steel"
+                {site.nav.map((n) => {
+                  const children = "children" in n ? n.children : undefined;
+                  const isExpanded = expanded === n.href;
+                  const subId = `${uid}-${n.href.replace(/\W+/g, "-")}`;
+                  const linkCls =
+                    "block py-2 text-[clamp(2rem,11vw,3.5rem)] font-medium tracking-[-0.01em] text-white transition-colors hover:text-steel";
+                  return (
+                    <motion.li
+                      key={n.href}
+                      variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}
+                      transition={{ duration: 0.5, ease: EXPO }}
                     >
-                      {n.label}
-                    </a>
-                  </motion.li>
-                ))}
+                      {children ? (
+                        <>
+                          <div className="flex items-center justify-between gap-3">
+                            <a href={n.href} onClick={(e) => go(e, n.href)} className={linkCls}>
+                              {n.label}
+                            </a>
+                            <button
+                              type="button"
+                              aria-expanded={isExpanded}
+                              aria-controls={subId}
+                              aria-label={`${n.label} submenu`}
+                              onClick={() => setExpanded(isExpanded ? null : n.href)}
+                              className="-mr-2 flex h-11 w-11 shrink-0 items-center justify-center text-steel transition-colors hover:text-white"
+                            >
+                              <svg
+                                viewBox="0 0 14 8"
+                                className={cn(
+                                  "h-[7px] w-[13px] transition-transform duration-300 ease-expo",
+                                  isExpanded && "rotate-180",
+                                )}
+                                fill="none"
+                                aria-hidden
+                              >
+                                <path
+                                  d="M1 1L7 7L13 1"
+                                  stroke="currentColor"
+                                  strokeWidth="1.6"
+                                  strokeLinecap="square"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                          <AnimatePresence initial={false}>
+                            {isExpanded && (
+                              <motion.ul
+                                id={subId}
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: reduced ? 0 : 0.32, ease: EXPO }}
+                                className="overflow-hidden pl-1"
+                              >
+                                {children.map((c) => (
+                                  <li key={c.href}>
+                                    <a
+                                      href={c.href}
+                                      onClick={(e) => go(e, c.href)}
+                                      className="flex items-center gap-3 py-2.5 font-mono text-[0.78rem] uppercase tracking-[0.14em] text-white/70 transition-colors hover:text-white"
+                                    >
+                                      <span
+                                        className="h-1 w-1 shrink-0 rotate-45 border border-accent"
+                                        aria-hidden
+                                      />
+                                      {c.label}
+                                    </a>
+                                  </li>
+                                ))}
+                              </motion.ul>
+                            )}
+                          </AnimatePresence>
+                        </>
+                      ) : (
+                        <a href={n.href} onClick={(e) => go(e, n.href)} className={linkCls}>
+                          {n.label}
+                        </a>
+                      )}
+                    </motion.li>
+                  );
+                })}
               </motion.ul>
 
               <motion.div

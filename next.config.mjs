@@ -62,6 +62,7 @@ const nextConfig = {
       { source: "/:path*", headers: securityHeaders },
       { source: "/fonts/:path*", headers: [{ key: "Cache-Control", value: fontCache }] },
       { source: "/video/:path*", headers: [{ key: "Cache-Control", value: mediaCache }] },
+      { source: "/images/:path*", headers: [{ key: "Cache-Control", value: mediaCache }] },
     ];
   },
 };

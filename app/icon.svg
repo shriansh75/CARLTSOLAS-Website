@@ -1,11 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="CARLTSOLAS">
   <!-- Ink ground. Reads on both light and dark browser chrome. -->
   <rect width="64" height="64" rx="12" fill="#081020" />
-  <!-- C monogram as a drafted arc: a vector path, never <text>, because fonts do
-       not resolve in favicon rendering contexts. Butt caps keep the technical,
-       drawing-office feel of the blueprint identity. -->
+  <!--
+    C monogram as a drafted arc: a vector path, never <text>, because fonts do
+    not resolve in favicon rendering contexts.
+
+    Centring maths (do not "simplify" these coordinates, it un-centres the mark):
+      r = 17, stroke-width = 9  ->  outer radius R = r + w/2 = 21.5
+      The arc spans 270 deg with the opening facing right, so it reaches a full
+      R to the left but only R*cos(45) to the right. Centring the circle on 32
+      therefore leaves the mark visibly left of centre. The bounding box is
+      centred by placing the circle at cx = 32 + R(1 - cos45)/2 = 35.1486.
+      Endpoints sit at exactly +/-45 deg: x = cx + r*cos45 = 47.169,
+      y = 32 -/+ r*cos45 = 19.979 / 44.021. Those endpoints are consistent with
+      r = 17, so the renderer never rescales the radius.
+      Result: left margin 13.649 = right margin, top 10.5 = bottom.
+  -->
   <path
-    d="M45.02 18.98 A17 17 0 1 0 45.02 45.02"
+    d="M47.169 19.979 A17 17 0 1 0 47.169 44.021"
     fill="none"
     stroke="#ffffff"
     stroke-width="9"

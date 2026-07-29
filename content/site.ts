@@ -31,9 +31,24 @@ export const site = {
     },
   },
 
+  // Hash entries scroll to a home-page section; entries starting with "/" are
+  // real routes and are client-navigated (see Header.onNav / MobileMenu.go).
+  // `children` turns an entry into a dropdown: the parent link still navigates,
+  // while a caret button discloses the children (Header) or expands them in
+  // place (MobileMenu). Children are routes, so they take the same isRoute()
+  // branch and never reach Lenis.
   nav: [
     { label: "Company", href: "#company" },
     { label: "Technology", href: "#technology" },
+    {
+      label: "Marine",
+      href: "/marine",
+      children: [
+        { label: "Marine Overview", href: "/marine" },
+        { label: "Flag State Inspections", href: "/marine/flag-state-inspections" },
+        { label: "Lifeboat Manufacturing", href: "/marine/lifeboat-manufacturing" },
+      ],
+    },
     { label: "Capabilities", href: "#capabilities" },
     { label: "Contact", href: "#contact" },
   ],
