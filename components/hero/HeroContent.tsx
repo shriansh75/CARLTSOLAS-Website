@@ -51,7 +51,7 @@ export function HeroContent() {
           play={revealed}
           delay={0.5}
           stagger={0.03}
-          className="max-w-xl text-[clamp(0.9rem,1.35vw,1.2rem)] font-normal leading-snug text-white"
+          className="max-w-xl text-[clamp(0.85rem,1.25vw,1.125rem)] font-normal leading-snug text-white"
         />
         <span
           className={cn(

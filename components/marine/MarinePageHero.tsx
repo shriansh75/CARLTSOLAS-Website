@@ -55,13 +55,20 @@ export function MarinePageHero({
               className="absolute inset-0 h-full w-full object-cover object-center"
             />
           </picture>
-          {/* Bottom weight carries the type; the top stays light because the
-              header now supplies its own scrim and two would stack. */}
+          {/* Contrast stack. The copy is left-aligned inside u-shell, so a
+              LEFT-WEIGHTED scrim protects it while leaving the right of the
+              photograph clean — necessary now the heroes are bright (sunset
+              sky, daylit tanker deck) rather than a dark engine room.
+              The /72 and /12 steps only render because theme.opacity declares
+              them; they emitted no CSS at all until 2026-08-06. */}
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-ink/90 via-ink/55 to-ink/12"
+            aria-hidden
+          />
           <div
             className="absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-ink via-ink/72 to-transparent"
             aria-hidden
           />
-          <div className="absolute inset-0 bg-ink/25" aria-hidden />
         </>
       ) : (
         <>
@@ -81,10 +88,14 @@ export function MarinePageHero({
       )}
 
       <div className="u-shell relative pb-[clamp(2.75rem,6vh,4.5rem)] pt-32">
-        <p className="mb-7 font-mono text-[0.5625rem] uppercase tracking-[0.28em] text-white/60">
+        {/* Both sit near the top of the frame, above the bottom scrim's reach,
+            so they carry their own shadow rather than relying on it. */}
+        <p className="mb-7 font-mono text-[0.5625rem] uppercase tracking-[0.28em] text-white/70 [text-shadow:0_1px_8px_rgba(8,16,32,0.7)]">
           {breadcrumb}
         </p>
-        <SectionIndex index={index} label={label} variant="onDark" />
+        <div className="[text-shadow:0_1px_8px_rgba(8,16,32,0.7)]">
+          <SectionIndex index={index} label={label} variant="onDark" />
+        </div>
         <h1 className="mt-8 max-w-[46rem] text-[clamp(1.85rem,3.4vw,3.05rem)] font-semibold leading-[1.08] tracking-[-0.018em] text-white [text-shadow:0_2px_18px_rgba(8,16,32,0.5)] [text-wrap:balance]">
           <TextReveal text={heading} play />
         </h1>

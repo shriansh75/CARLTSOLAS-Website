@@ -8,6 +8,20 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      // Off-scale opacity steps used by the hero scrims. Tailwind's slash
+      // modifier resolves against theme.opacity and SILENTLY generates nothing
+      // for a step that is absent — no error, no warning, the class just does
+      // nothing. Four scrims shipped invisible because of this, including the
+      // hard anchor behind the hero wordmark (`from-ink/78`), which is why the
+      // hero text looked unreadable over bright footage.
+      // `scripts/check-opacity.mjs` fails the build if a used step is missing.
+      opacity: {
+        12: ".12",
+        16: ".16",
+        62: ".62",
+        72: ".72",
+        78: ".78",
+      },
       colors: {
         // Tokens are RGB channel triples in globals.css, so opacity modifiers
         // (bg-ink/80, border-navy/15, from-ink/95) resolve to valid CSS.

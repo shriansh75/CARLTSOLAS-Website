@@ -9,6 +9,7 @@ import { NodeMarker } from "@/components/ui/NodeMarker";
 import { Decode } from "@/components/ui/Decode";
 import { Footer } from "@/components/chrome/Footer";
 import { CtaLink } from "./CtaLink";
+import { MarineGrid } from "./MarineGrid";
 import { cn } from "@/lib/cn";
 import type { ServiceImage, ServicePageContent } from "@/content/types";
 
@@ -39,26 +40,26 @@ export function MarinePage({ content }: { content: ServicePageContent }) {
           <div className="u-shell py-[clamp(4.5rem,10vh,8rem)]">
             <SectionIndex index={intro.index} label={intro.label} variant="onLight" />
             <div className="mt-10 grid gap-x-16 gap-y-8 lg:grid-cols-12">
-              {/* The image lives INSIDE the heading column, not in a second
-                  grid row: a separate row starts below the taller body-copy
-                  column, which reopens the gap this is meant to close. */}
-              <div className="lg:col-span-7">
-                <h2 className="font-sans text-[clamp(1.5rem,3vw,2.5rem)] font-medium leading-[1.14] tracking-[-0.01em] text-navy">
-                  <TextReveal text={content.intro.heading} stagger={0.022} />
-                </h2>
-                {content.introImage ? (
-                  <Reveal className="mt-10" y={32}>
-                    <FramedImage image={content.introImage} ratio="aspect-[16/10]" />
-                  </Reveal>
-                ) : null}
-              </div>
-              <Reveal className="flex flex-col gap-4 lg:col-span-5">
+              {/* Heading spans the full width; below it the copy and a
+                  CONTAINED image sit side by side. Previously the heading and
+                  image shared the wide 7-column track while three paragraphs
+                  were squeezed into the narrow 5-column one, which made the
+                  image the widest element on the page below the hero. */}
+              <h2 className="font-sans text-[clamp(1.5rem,3vw,2.5rem)] font-medium leading-[1.14] tracking-[-0.01em] text-navy lg:col-span-12">
+                <TextReveal text={content.intro.heading} stagger={0.022} />
+              </h2>
+              <Reveal className="flex flex-col gap-4 lg:col-span-6">
                 {content.intro.paragraphs.map((p) => (
                   <p key={p} className="text-[0.9375rem] leading-[1.75] text-slate">
                     {p}
                   </p>
                 ))}
               </Reveal>
+              {content.introImage ? (
+                <Reveal className="lg:col-span-5 lg:col-start-8" y={32}>
+                  <FramedImage image={content.introImage} ratio="aspect-[4/3]" />
+                </Reveal>
+              ) : null}
             </div>
             {content.intro.chips?.length ? (
               <Reveal selector="[data-chip]" stagger={0.06} className="mt-12 flex flex-wrap gap-2">
@@ -76,43 +77,9 @@ export function MarinePage({ content }: { content: ServicePageContent }) {
           </div>
         </section>
 
-        {/* image band, dark */}
+        {/* four-tile bento, identical on every Marine page */}
         {content.feature?.images.length ? (
-          <section data-nav-theme="dark" className="relative overflow-hidden bg-ink">
-            <div className="u-shell relative py-[clamp(3rem,7vh,5rem)]">
-              <Reveal
-                selector="[data-reveal]"
-                stagger={0.1}
-                className={cn(
-                  "grid gap-px overflow-hidden border border-[var(--hairline)] bg-[var(--hairline)]",
-                  content.feature.images.length > 1 && "md:grid-cols-2",
-                )}
-              >
-                {content.feature.images.map((img) => (
-                  <div key={img.jpg} data-reveal className="relative bg-ink">
-                    <picture>
-                      <source srcSet={img.webp} type="image/webp" />
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={img.jpg}
-                        alt={img.alt}
-                        loading="lazy"
-                        decoding="async"
-                        className="aspect-[3/2] w-full object-cover"
-                      />
-                    </picture>
-                  </div>
-                ))}
-              </Reveal>
-              {content.feature.caption ? (
-                <Reveal className="mt-5">
-                  <p className="font-mono text-[0.5625rem] uppercase tracking-[0.22em] text-meta">
-                    {content.feature.caption}
-                  </p>
-                </Reveal>
-              ) : null}
-            </div>
-          </section>
+          <MarineGrid images={content.feature.images} caption={content.feature.caption} />
         ) : null}
 
         {/* service cards (landing page), dark */}

@@ -7,7 +7,6 @@ import { SmoothScroll } from "./SmoothScroll";
 import { Preloader } from "@/components/loader/Preloader";
 import { Grain } from "@/components/ui/Grain";
 import { CustomCursor } from "@/components/ui/CustomCursor";
-import { MotionHoldToggle } from "@/components/ui/MotionHoldToggle";
 import { Header } from "@/components/chrome/Header";
 
 /** Composes global providers + persistent chrome around the page. */
@@ -26,7 +25,12 @@ export function Providers({ children }: { children: ReactNode }) {
         <SmoothScroll>{children}</SmoothScroll>
         <Grain />
         <CustomCursor />
-        <MotionHoldToggle />
+        {/* The visible HOLD control was removed at the client's instruction
+            (2026-08-06) after the WCAG 2.2.2 implication was raised. The
+            MotionHold provider and every useMotionHold() consumer stay wired,
+            so restoring a control is a one-line change here. The marquee runs
+            on CSS keyframes, so the global prefers-reduced-motion block still
+            stops ambient motion for users who set that preference. */}
         <Preloader />
       </MotionHoldProvider>
     </LoaderGateProvider>

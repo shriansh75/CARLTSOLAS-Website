@@ -18,11 +18,11 @@ export const marinePage: ServicePageContent = {
     "CARLTSOLAS is a technology company built on a marine engineering foundation. Where a project calls for marine and maritime work, we deliver it together with SOLAS MODU Marine Services.",
   heroImage: {
     // NOTE the filename: /images/* is served with a one-day cache, so an image
-    // whose content changes must take a NEW path. Overwriting the previous
-    // marine-overview.* served stale bytes to anyone who had visited before.
-    webp: "/images/marine/marine-rig.webp",
-    jpg: "/images/marine/marine-rig.jpg",
-    alt: "An offshore production platform standing in open sea, its flare boom lit against calm water.",
+    // whose content changes must take a NEW path. Overwriting a path in place
+    // served stale bytes to anyone who had visited before.
+    webp: "/images/marine/hero-sunset.webp",
+    jpg: "/images/marine/hero-sunset.jpg",
+    alt: "A bulk carrier under way at sunset, silhouetted against an open sky.",
   },
   introImage: {
     webp: "/images/marine/marine-intro.webp",
@@ -37,9 +37,19 @@ export const marinePage: ServicePageContent = {
         alt: "A technician taking an ultrasonic thickness reading on a steel structure with a handheld flaw detector.",
       },
       {
-        webp: "/images/marine/ndt-secondary.webp",
-        jpg: "/images/marine/ndt-secondary.jpg",
-        alt: "A technician inspecting a welded pipeline joint, with inspection marks recorded on the pipe coating.",
+        webp: "/images/marine/tile-offshore-rig.webp",
+        jpg: "/images/marine/tile-offshore-rig.jpg",
+        alt: "A jack-up drilling rig standing on its legs in open water.",
+      },
+      {
+        webp: "/images/marine/tile-ultrasonic.webp",
+        jpg: "/images/marine/tile-ultrasonic.jpg",
+        alt: "Ultrasonic testing equipment in use on a steel surface.",
+      },
+      {
+        webp: "/images/marine/tile-rig-tanker.webp",
+        jpg: "/images/marine/tile-rig-tanker.jpg",
+        alt: "An offshore rig at sea with a tanker alongside.",
       },
     ],
     caption: "NON-DESTRUCTIVE TESTING · THICKNESS MEASUREMENT · WELD AND COATING INSPECTION",

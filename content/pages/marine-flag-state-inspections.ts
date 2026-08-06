@@ -36,9 +36,9 @@ export const flagStateInspectionsPage: ServicePageContent = {
   lede:
     "Independent, convention-wide inspection of ships flying your flag, carried out by qualified surveyors and reported in a form your administration can act on.",
   heroImage: {
-    webp: "/images/marine/flag-state-inspections.webp",
-    jpg: "/images/marine/flag-state-inspections.jpg",
-    alt: "A ship's machinery space photographed along the length of the engine platform, showing cylinder heads, handrails and access stairs.",
+    webp: "/images/marine/hero-tanker.webp",
+    jpg: "/images/marine/hero-tanker.jpg",
+    alt: "The deck of a tanker under way, cargo manifold piping running forward toward the bow.",
   },
   introImage: {
     webp: "/images/marine/fsi-intro.webp",
@@ -48,9 +48,24 @@ export const flagStateInspectionsPage: ServicePageContent = {
   feature: {
     images: [
       {
+        webp: "/images/marine/flag-state-inspections.webp",
+        jpg: "/images/marine/flag-state-inspections.jpg",
+        alt: "A ship's machinery space along the length of the engine platform, cylinder heads and access stairs in view.",
+      },
+      {
+        webp: "/images/marine/tile-confined-space.webp",
+        jpg: "/images/marine/tile-confined-space.jpg",
+        alt: "A marine engineer working inside a confined space aboard a vessel.",
+      },
+      {
         webp: "/images/marine/hull-survey.webp",
         jpg: "/images/marine/hull-survey.jpg",
-        alt: "A vessel's hull and propeller below the waterline, lit from behind during an underwater survey.",
+        alt: "A vessel's hull and propeller below the waterline during an underwater survey.",
+      },
+      {
+        webp: "/images/marine/tile-lsa-stowage.webp",
+        jpg: "/images/marine/tile-lsa-stowage.jpg",
+        alt: "Life jackets stowed in their deck locker, ready for inspection.",
       },
     ],
     caption: "HULL · MACHINERY · LIFE-SAVING · POLLUTION PREVENTION · MANAGEMENT SYSTEMS",

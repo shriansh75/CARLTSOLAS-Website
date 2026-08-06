@@ -54,9 +54,24 @@ export const lifeboatManufacturingPage: ServicePageContent = {
   feature: {
     images: [
       {
+        webp: "/images/marine/tile-lifeboat-deployment.webp",
+        jpg: "/images/marine/tile-lifeboat-deployment.jpg",
+        alt: "An enclosed lifeboat being lowered from its davit during a launch exercise.",
+      },
+      {
         webp: "/images/marine/lifeboat-service.webp",
         jpg: "/images/marine/lifeboat-service.jpg",
         alt: "A survey team attending a lifeboat at its davit, checking the launching appliance and release gear.",
+      },
+      {
+        webp: "/images/marine/tile-lifeboat-crew.webp",
+        jpg: "/images/marine/tile-lifeboat-crew.jpg",
+        alt: "Technicians servicing a lifeboat and its launching appliance on deck.",
+      },
+      {
+        webp: "/images/marine/tile-lifeboat-launch.webp",
+        jpg: "/images/marine/tile-lifeboat-launch.jpg",
+        alt: "A survival craft suspended on its falls above the water during a load test.",
       },
     ],
     caption: "SERVICING · LOAD TESTING · RELEASE GEAR · INSTALLATION AND COMMISSIONING",
