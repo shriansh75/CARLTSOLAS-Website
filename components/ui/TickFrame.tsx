@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { registerGsap, gsap, ScrollTrigger } from "@/lib/gsap";
+import { registerGsap, gsap } from "@/lib/gsap";
 import { STAGGER } from "@/lib/motion";
+import { observeOnce } from "@/lib/inView";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import { cn } from "@/lib/cn";
 
@@ -37,14 +38,13 @@ export function TickFrame({ className }: { className?: string }) {
       p.style.strokeDasharray = String(len);
       p.style.strokeDashoffset = String(len);
     });
-    const st = ScrollTrigger.create({
-      trigger: el,
-      start: "top 88%",
-      once: true,
-      onEnter: () =>
+    // One-shot visibility: IntersectionObserver, not ScrollTrigger. See lib/inView.
+    return observeOnce(
+      el,
+      () =>
         gsap.to(paths, { strokeDashoffset: 0, duration: 0.6, ease: "power2.out", stagger: STAGGER.ticks }),
-    });
-    return () => st.kill();
+      "top 88%",
+    );
   }, [reduced]);
 
   return (

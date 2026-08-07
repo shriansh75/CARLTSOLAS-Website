@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, type ElementType, type FC, type ReactNode, type Ref } from "react";
-import { registerGsap, gsap, ScrollTrigger } from "@/lib/gsap";
+import { registerGsap, gsap } from "@/lib/gsap";
 import { DUR, EASE } from "@/lib/motion";
+import { observeOnce } from "@/lib/inView";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 
 type Props = {
@@ -53,14 +54,12 @@ export function Reveal({
     }
 
     gsap.set(targets, { opacity: 0, y });
-    const st = ScrollTrigger.create({
-      trigger: el,
+    // One-shot visibility: IntersectionObserver, not ScrollTrigger. See lib/inView.
+    return observeOnce(
+      el,
+      () => gsap.to(targets, { opacity: 1, y: 0, duration: DUR.base, ease: EASE.soft, delay, stagger }),
       start,
-      once: true,
-      onEnter: () =>
-        gsap.to(targets, { opacity: 1, y: 0, duration: DUR.base, ease: EASE.soft, delay, stagger }),
-    });
-    return () => st.kill();
+    );
   }, [reduced, y, delay, start, stagger, selector]);
 
   return (

@@ -5,6 +5,7 @@ import { TextReveal } from "@/components/ui/TextReveal";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionIndex } from "@/components/ui/SectionIndex";
 import { TickFrame } from "@/components/ui/TickFrame";
+import { Pic } from "@/components/ui/Pic";
 import { NodeMarker } from "@/components/ui/NodeMarker";
 import { Decode } from "@/components/ui/Decode";
 import { Footer } from "@/components/chrome/Footer";
@@ -294,17 +295,12 @@ function FramedImage({ image, ratio }: { image: ServiceImage; ratio: string }) {
   return (
     <div className="relative overflow-hidden border border-navy/10">
       <TickFrame />
-      <picture>
-        <source srcSet={image.webp} type="image/webp" />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={image.jpg}
-          alt={image.alt}
-          loading="lazy"
-          decoding="async"
-          className={cn("w-full object-cover", ratio)}
-        />
-      </picture>
+      <Pic
+        image={image}
+        // Roughly a five-twelfths column at lg, full width below that.
+        sizes="(min-width: 1024px) 42vw, 100vw"
+        imgClassName={cn("w-full object-cover", ratio)}
+      />
     </div>
   );
 }

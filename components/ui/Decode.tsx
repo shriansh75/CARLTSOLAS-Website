@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, type ElementType, type FC, type ReactNode, type Ref } from "react";
-import { registerGsap, gsap, ScrollTrigger } from "@/lib/gsap";
+import { registerGsap, gsap } from "@/lib/gsap";
 import { DUR, EASE } from "@/lib/motion";
+import { observeOnce } from "@/lib/inView";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import { cn } from "@/lib/cn";
 
@@ -42,23 +43,35 @@ export function Decode({ text, play, delay = 0, as: Tag = "span", className }: D
     }
     if (controlled && !play) return;
 
-    const ctx = gsap.context(() => {
-      const tween = () => {
-        doneRef.current = true;
-        gsap.to(el, {
-          duration: Math.max(DUR.cross, text.length * 0.02),
-          delay,
-          ease: EASE.soft,
-          scrambleText: { text, chars: GLYPHS, speed: 0.4, revealDelay: 0.05 },
-        });
-      };
-      if (controlled) {
-        tween();
-      } else {
-        ScrollTrigger.create({ trigger: el, start: "top 88%", once: true, onEnter: tween });
-      }
-    }, ref);
-    return () => ctx.revert();
+    let tween: gsap.core.Tween | null = null;
+    const run = () => {
+      doneRef.current = true;
+      tween = gsap.to(el, {
+        duration: Math.max(DUR.cross, text.length * 0.02),
+        delay,
+        ease: EASE.soft,
+        scrambleText: { text, chars: GLYPHS, speed: 0.4, revealDelay: 0.05 },
+      });
+    };
+    // Killing the tween (rather than reverting a gsap.context) leaves the node
+    // alone, so we settle it on the real text: a context revert would restore
+    // the placeholder and, with `doneRef` blocking a re-run, strand it blank.
+    const settle = () => {
+      if (!tween) return;
+      tween.kill();
+      el.textContent = text;
+    };
+
+    if (controlled) {
+      run();
+      return settle;
+    }
+    // One-shot visibility: IntersectionObserver, not ScrollTrigger. See lib/inView.
+    const dispose = observeOnce(el, run, "top 88%");
+    return () => {
+      dispose();
+      settle();
+    };
   }, [text, play, controlled, delay, reduced]);
 
   return (

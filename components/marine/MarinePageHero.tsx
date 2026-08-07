@@ -3,6 +3,7 @@
 import { TextReveal } from "@/components/ui/TextReveal";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionIndex } from "@/components/ui/SectionIndex";
+import { Pic } from "@/components/ui/Pic";
 import { splitEyebrow } from "@/components/legal/eyebrow";
 import type { ServiceImage } from "@/content/types";
 
@@ -44,23 +45,30 @@ export function MarinePageHero({
     >
       {image ? (
         <>
-          <picture>
-            <source srcSet={image.webp} type="image/webp" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={image.jpg}
-              alt={image.alt}
-              fetchPriority="high"
-              decoding="async"
-              className="absolute inset-0 h-full w-full object-cover object-center"
-            />
-          </picture>
+          {/* The one priority image per page: this is the LCP element. */}
+          <Pic
+            image={image}
+            priority
+            sizes="100vw"
+            className="contents"
+            imgClassName="absolute inset-0 h-full w-full object-cover object-center"
+          />
           {/* Contrast stack. The copy is left-aligned inside u-shell, so a
               LEFT-WEIGHTED scrim protects it while leaving the right of the
               photograph clean — necessary now the heroes are bright (sunset
               sky, daylit tanker deck) rather than a dark engine room.
               The /72 and /12 steps only render because theme.opacity declares
-              them; they emitted no CSS at all until 2026-08-06. */}
+              them; they emitted no CSS at all until 2026-08-06.
+
+              DELIBERATELY only two layers. A third top scrim was added and then
+              removed: it was chasing a 2.21:1 breadcrumb reading that turned out
+              to be a measurement artifact (the element box of a full-width <p>
+              samples background the glyphs never touch). Measured against TIGHT
+              text bounds these two layers already give the breadcrumb 9.99:1 and
+              the index label 9.15:1 on the brightest hero, so darkening the
+              photograph further bought nothing and cost the photography-first
+              direction. If you are tempted to add scrim for legibility, measure
+              with Range.getBoundingClientRect() first. */}
           <div
             className="absolute inset-0 bg-gradient-to-r from-ink/90 via-ink/55 to-ink/12"
             aria-hidden
@@ -88,13 +96,15 @@ export function MarinePageHero({
       )}
 
       <div className="u-shell relative pb-[clamp(2.75rem,6vh,4.5rem)] pt-32">
-        {/* Both sit near the top of the frame, above the bottom scrim's reach,
-            so they carry their own shadow rather than relying on it. */}
-        <p className="mb-7 font-mono text-[0.5625rem] uppercase tracking-[0.28em] text-white/70 [text-shadow:0_1px_8px_rgba(8,16,32,0.7)]">
+        {/* Both sit near the top of the frame, so they get the dedicated top
+            scrim above plus a full-strength colour. The text-shadow stays as a
+            belt-and-braces nicety, but it is NOT counted as contrast: WCAG does
+            not recognise it, and the measurement treats it as worth zero. */}
+        <p className="mb-7 font-mono text-[0.5625rem] uppercase tracking-[0.28em] text-white [text-shadow:0_1px_8px_rgba(8,16,32,0.7)]">
           {breadcrumb}
         </p>
         <div className="[text-shadow:0_1px_8px_rgba(8,16,32,0.7)]">
-          <SectionIndex index={index} label={label} variant="onDark" />
+          <SectionIndex index={index} label={label} variant="onPhoto" />
         </div>
         <h1 className="mt-8 max-w-[46rem] text-[clamp(1.85rem,3.4vw,3.05rem)] font-semibold leading-[1.08] tracking-[-0.018em] text-white [text-shadow:0_2px_18px_rgba(8,16,32,0.5)] [text-wrap:balance]">
           <TextReveal text={heading} play />

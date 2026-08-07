@@ -58,18 +58,41 @@ export function Header() {
     // the documented cause of the earlier scroll-lag regression.
     const TINT_AT = 80;
     let ticking = false;
+    // Mirror the three pieces of state and only call a setter when the value has
+    // genuinely changed. React does bail out of re-rendering CHILDREN when a
+    // setter receives an identical value, but it can still re-render this
+    // component once before bailing — and this ran up to three setters per
+    // scroll frame. Comparing first makes a steady scroll pure arithmetic with
+    // no React work at all; the setters then fire a handful of times per page,
+    // which is how often these values actually change.
+    const shown = { hidden: false, scrolled: false, theme: "dark" as "dark" | "light" };
     const compute = () => {
       ticking = false;
       const y = window.scrollY;
-      setHidden(y > 140 && y > lastY.current);
-      setScrolled(y > TINT_AT);
-      lastY.current = y;
-      const probeY = y + PROBE;
-      let next: "dark" | "light" = "dark";
-      for (const band of bands) {
-        if (probeY >= band.top && probeY < band.bottom) next = band.theme;
+
+      const nextHidden = y > 140 && y > lastY.current;
+      if (nextHidden !== shown.hidden) {
+        shown.hidden = nextHidden;
+        setHidden(nextHidden);
       }
-      setTheme(next);
+
+      const nextScrolled = y > TINT_AT;
+      if (nextScrolled !== shown.scrolled) {
+        shown.scrolled = nextScrolled;
+        setScrolled(nextScrolled);
+      }
+
+      lastY.current = y;
+
+      const probeY = y + PROBE;
+      let nextTheme: "dark" | "light" = "dark";
+      for (const band of bands) {
+        if (probeY >= band.top && probeY < band.bottom) nextTheme = band.theme;
+      }
+      if (nextTheme !== shown.theme) {
+        shown.theme = nextTheme;
+        setTheme(nextTheme);
+      }
     };
     const onScroll = () => {
       if (!ticking) {

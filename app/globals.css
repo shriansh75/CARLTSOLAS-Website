@@ -128,6 +128,24 @@ html.is-loading body {
   animation: route-fade 0.32s var(--ease-expo) both;
 }
 
+/* Marquee track (components/ui/Marquee.tsx). A CSS animation, not a GSAP
+   `repeat: -1` tween: an infinite loop is the one case where the compositor can
+   own the whole thing and the main thread does literally nothing per frame.
+   `--marquee-duration` is set inline from the component's `duration` prop.
+
+   Pausing is `animation-play-state`, which has no kill/overwrite semantics to
+   get wrong — the previous GSAP version was killed outright by a skew tween
+   sharing its target, which is what stopped the carousel dead on first scroll.
+   The global reduced-motion block below also collapses this automatically, so
+   the strip holds still without any JS branch. */
+.u-marquee-track {
+  animation: marquee-x var(--marquee-duration, 32s) linear infinite;
+}
+
+.u-marquee-track[data-paused="true"] {
+  animation-play-state: paused;
+}
+
 /* ============================================================
    Keyframes
    ============================================================ */

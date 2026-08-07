@@ -1,8 +1,9 @@
 "use client";
 
 import { Fragment, useEffect, useRef, type ElementType, type FC, type ReactNode, type Ref } from "react";
-import { registerGsap, gsap, ScrollTrigger } from "@/lib/gsap";
+import { registerGsap, gsap } from "@/lib/gsap";
 import { DUR, EASE, STAGGER } from "@/lib/motion";
+import { observeOnce } from "@/lib/inView";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 import { cn } from "@/lib/cn";
 
@@ -51,12 +52,19 @@ export function TextReveal({
     if (!targets.length) return;
 
     if (reduced) {
-      gsap.set(targets, { yPercent: 0, opacity: 1, willChange: "auto" });
+      gsap.set(targets, { yPercent: 0, opacity: 1 });
       return;
     }
 
     gsap.set(targets, { yPercent: 118 });
-    const run = () =>
+    const run = () => {
+      // Promote imperatively, at trigger time. `will-change` used to sit in the
+      // static class, so EVERY word on the page held a compositor layer from
+      // first paint and only released it in `onComplete` — words never scrolled
+      // to kept theirs for the whole session, and the controlled `play={false}`
+      // path never released at all. Asking for a layer just before the tween is
+      // the only point at which the promise is worth anything.
+      gsap.set(targets, { willChange: "transform" });
       gsap.to(targets, {
         yPercent: 0,
         duration: DUR.reveal,
@@ -66,14 +74,15 @@ export function TextReveal({
         // release the compositor layer once the word has landed (mobile layer budget)
         onComplete: () => gsap.set(targets, { willChange: "auto" }),
       });
+    };
 
     if (typeof play === "boolean") {
       if (play) run();
       return;
     }
 
-    const st = ScrollTrigger.create({ trigger: el, start, once: true, onEnter: run });
-    return () => st.kill();
+    // One-shot visibility: IntersectionObserver, not ScrollTrigger. See lib/inView.
+    return observeOnce(el, run, start);
   }, [reduced, play, delay, stagger, start]);
 
   return (
@@ -83,7 +92,9 @@ export function TextReveal({
         {words.map((w, i) => (
           <Fragment key={i}>
             <span className="inline-block overflow-hidden align-bottom pb-[0.14em] -mb-[0.14em]">
-              <span data-word className={cn("inline-block will-change-transform", wordClassName)}>
+              {/* No `will-change` here: it is applied imperatively at trigger
+                  time (see the effect) so unscrolled words hold no layer. */}
+              <span data-word className={cn("inline-block", wordClassName)}>
                 {w}
               </span>
             </span>

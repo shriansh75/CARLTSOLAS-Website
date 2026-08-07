@@ -10,8 +10,15 @@ export function BlueprintOverlay() {
     <div className="pointer-events-none absolute inset-0" aria-hidden>
       {/* full-height bottom scrim, kept light so the footage colour reads through */}
       <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-ink/12 to-transparent" />
-      {/* short hard anchor only where the wordmark sits */}
-      <div className="absolute inset-x-0 bottom-0 h-[30%] bg-gradient-to-t from-ink/78 to-transparent" />
+      {/* Hard anchor under the wordmark.
+          It used to be h-[30%], which only reached y≈630 on a 900px viewport
+          while the wordmark sits at roughly y 520-660 — so most of the largest
+          white type on the site had nothing behind it but the light /60 scrim
+          above. Measured against the live video the wordmark came out at
+          2.96:1, 3.04:1 and 3.80:1 on different frames: straddling the 3:1
+          large-text floor and crossing it depending on how much wake was in
+          shot. Taller, with a mid stop, so the whole wordmark is seated. */}
+      <div className="absolute inset-x-0 bottom-0 h-[52%] bg-gradient-to-t from-ink/90 via-ink/55 to-transparent" />
       {/* top header scrim — a touch stronger so the nav links stay legible */}
       <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-ink/62 via-ink/16 to-transparent" />
       {/* soft vignette */}

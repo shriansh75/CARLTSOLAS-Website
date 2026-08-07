@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/ui/Reveal";
+import { Pic } from "@/components/ui/Pic";
 import { cn } from "@/lib/cn";
 import type { ServiceImage } from "@/content/types";
 
@@ -50,21 +51,17 @@ export function MarineGrid({ images, caption }: { images: ServiceImage[]; captio
                 i === 0 && "col-span-2 md:col-span-2 md:row-span-2",
               )}
             >
-              <picture>
-                <source srcSet={img.webp} type="image/webp" />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={img.jpg}
-                  alt={img.alt}
-                  loading="lazy"
-                  decoding="async"
-                  className={cn(
-                    "h-full w-full object-cover",
-                    // mobile has no fixed band height, so tiles carry a ratio
-                    i === 0 ? "aspect-[4/3] md:aspect-auto" : "aspect-square md:aspect-auto",
-                  )}
-                />
-              </picture>
+              <Pic
+                image={img}
+                // The feature tile is roughly half the shell at md+, the small
+                // ones a quarter; on mobile the grid is two columns.
+                sizes={i === 0 ? "(min-width: 768px) 50vw, 50vw" : "(min-width: 768px) 25vw, 50vw"}
+                imgClassName={cn(
+                  "h-full w-full object-cover",
+                  // mobile has no fixed band height, so tiles carry a ratio
+                  i === 0 ? "aspect-[4/3] md:aspect-auto" : "aspect-square md:aspect-auto",
+                )}
+              />
             </figure>
           ))}
         </Reveal>

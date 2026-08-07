@@ -54,15 +54,26 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === "production" ? { exclude: ["error"] } : false,
   },
   async headers() {
-    // Long-cache the immutable self-hosted font; media (posters + video) gets a
-    // shorter cache with stale-while-revalidate so re-encodes still propagate.
-    const fontCache = "public, max-age=31536000, immutable";
-    const mediaCache = "public, max-age=86400, stale-while-revalidate=604800";
+    // Everything under /fonts, /images and /video is content-addressed BY
+    // CONVENTION: an asset whose bytes change ships under a new filename. That
+    // rule is already enforced socially (replacing marine-overview.* in place
+    // served the old photograph to every returning visitor for a day, and the
+    // fix was to rename it marine-rig.*), so the honest cache policy is
+    // `immutable` rather than a daily revalidation of a ~28 MB video.
+    //
+    // `immutable` means a revisit re-fetches NOTHING and does not even send a
+    // conditional request. It is also what makes the shortened repeat-visit
+    // preloader honest: there is no point compressing the loader to 2.2s if the
+    // hero video behind it is being revalidated on every load.
+    //
+    // The corollary is strict: NEVER change an asset's bytes at an existing
+    // path. A stale copy now persists for a year, not a day.
+    const immutableCache = "public, max-age=31536000, immutable";
     return [
       { source: "/:path*", headers: securityHeaders },
-      { source: "/fonts/:path*", headers: [{ key: "Cache-Control", value: fontCache }] },
-      { source: "/video/:path*", headers: [{ key: "Cache-Control", value: mediaCache }] },
-      { source: "/images/:path*", headers: [{ key: "Cache-Control", value: mediaCache }] },
+      { source: "/fonts/:path*", headers: [{ key: "Cache-Control", value: immutableCache }] },
+      { source: "/video/:path*", headers: [{ key: "Cache-Control", value: immutableCache }] },
+      { source: "/images/:path*", headers: [{ key: "Cache-Control", value: immutableCache }] },
     ];
   },
 };

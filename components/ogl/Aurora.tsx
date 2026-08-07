@@ -2,6 +2,7 @@
 
 import { Renderer, Program, Mesh, Color, Triangle } from "ogl";
 import { useEffect, useRef, useState } from "react";
+import { registerGsap, gsap } from "@/lib/gsap";
 
 /**
  * OGL aurora field, adapted from React Bits (MIT + Commons Clause) for the
@@ -147,35 +148,54 @@ export function Aurora({ colorStops, amplitude = 1.0, blend = 0.5, speed = 0.6, 
     const ctn = ctnRef.current;
     if (!ctn) return;
 
-    const renderer = new Renderer({
-      alpha: true,
-      premultipliedAlpha: true,
-      antialias: false,
-      dpr: Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 1, 1.5),
-    });
-    const gl = renderer.gl;
-    gl.clearColor(0, 0, 0, 0);
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    gl.canvas.style.backgroundColor = "transparent";
+    // WebGL can be unavailable for reasons that have nothing to do with the
+    // device being weak: a GPU blocklist entry, hardware acceleration switched
+    // off, a driver fault, remote desktop, a headless browser. OGL's Renderer
+    // dereferences the context inside its constructor, so that case THROWS —
+    // and an uncaught throw in an effect tears down the entire React root. The
+    // symptom is brutal and easy to miss: the page renders fine, then blanks
+    // completely the moment the footer scrolls into view and this lazy-mounts.
+    // Caught here, the static bg-ink behind the footer is the fallback and the
+    // rest of the page is untouched.
+    let scene: { renderer: Renderer; program: Program; mesh: Mesh; canvas: HTMLCanvasElement };
+    try {
+      const renderer = new Renderer({
+        alpha: true,
+        premultipliedAlpha: true,
+        antialias: false,
+        dpr: Math.min(typeof window !== "undefined" ? window.devicePixelRatio : 1, 1.5),
+      });
+      const gl = renderer.gl;
+      if (!gl) throw new Error("no webgl context");
+      gl.clearColor(0, 0, 0, 0);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      gl.canvas.style.backgroundColor = "transparent";
 
-    const geometry = new Triangle(gl);
-    if (geometry.attributes.uv) delete geometry.attributes.uv;
+      const geometry = new Triangle(gl);
+      if (geometry.attributes.uv) delete geometry.attributes.uv;
 
-    const program = new Program(gl, {
-      vertex: VERT,
-      fragment: FRAG,
-      uniforms: {
-        uTime: { value: 0 },
-        uAmplitude: { value: amplitude },
-        uColorStops: { value: toStops(colorStops) },
-        uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
-        uBlend: { value: blend },
-      },
-    });
+      // Shader compilation is the other throw site worth covering here.
+      const program = new Program(gl, {
+        vertex: VERT,
+        fragment: FRAG,
+        uniforms: {
+          uTime: { value: 0 },
+          uAmplitude: { value: amplitude },
+          uColorStops: { value: toStops(colorStops) },
+          uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
+          uBlend: { value: blend },
+        },
+      });
 
-    const mesh = new Mesh(gl, { geometry, program });
-    ctn.appendChild(gl.canvas);
+      const mesh = new Mesh(gl, { geometry, program });
+      scene = { renderer, program, mesh, canvas: gl.canvas };
+    } catch {
+      return;
+    }
+
+    const { renderer, program, mesh, canvas } = scene;
+    ctn.appendChild(canvas);
 
     const resize = () => {
       const w = ctn.offsetWidth;
@@ -188,7 +208,6 @@ export function Aurora({ colorStops, amplitude = 1.0, blend = 0.5, speed = 0.6, 
 
     // recover from a dropped GL context (iOS memory pressure / GPU reset) instead
     // of leaving a permanently blank canvas.
-    const canvas = gl.canvas;
     const onLost = (e: Event) => {
       e.preventDefault();
       lostRef.current = true;
@@ -207,7 +226,7 @@ export function Aurora({ colorStops, amplitude = 1.0, blend = 0.5, speed = 0.6, 
       canvas.removeEventListener("webglcontextlost", onLost as EventListener);
       canvas.removeEventListener("webglcontextrestored", onRestored as EventListener);
       if (canvas.parentNode === ctn) ctn.removeChild(canvas);
-      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      renderer.gl.getExtension("WEBGL_lose_context")?.loseContext();
       glRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -223,24 +242,35 @@ export function Aurora({ colorStops, amplitude = 1.0, blend = 0.5, speed = 0.6, 
     g.program.uniforms.uColorStops.value = toStops(colorStops);
   }, [amplitude, blend, colorStops, gen]);
 
-  // render loop only while active; clamped to ~60fps (ProMotion drives rAF at 120)
+  // Render loop only while active, driven by the GSAP ticker rather than a
+  // private requestAnimationFrame.
+  //
+  // One clock for the whole page. Lenis already runs inside gsap.ticker, so a
+  // second rAF loop meant two independent callbacks waking the main thread each
+  // frame and no ordering guarantee between them. Joining the existing ticker
+  // costs one more callback on a loop that is already running.
+  //
+  // The ~60fps clamp stays per-callback and is never applied via
+  // `gsap.ticker.fps()`, which is global and would coarsen Lenis on a 120Hz
+  // display. `time` is seconds here, where the old loop took milliseconds; the
+  // uniform rate is unchanged (ms * 0.01 * 0.1 == s * 1.0).
   useEffect(() => {
     if (!active) return;
-    let raf = 0;
-    const start = performance.now();
-    const FRAME_MS = 1000 / 60;
+    registerGsap();
+    const FRAME_S = 1 / 60;
     let last = -Infinity;
-    const loop = (t: number) => {
-      raf = requestAnimationFrame(loop);
-      if (t - last < FRAME_MS) return;
-      last = t;
+    let start = -1;
+    const tick = (time: number) => {
+      if (start < 0) start = time;
+      if (time - last < FRAME_S) return;
+      last = time;
       const g = glRef.current;
       if (!g || lostRef.current) return;
-      g.program.uniforms.uTime.value = (t - start) * 0.01 * speedRef.current * 0.1;
+      g.program.uniforms.uTime.value = (time - start) * speedRef.current;
       g.renderer.render({ scene: g.mesh });
     };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
+    gsap.ticker.add(tick);
+    return () => gsap.ticker.remove(tick);
   }, [active]);
 
   return <div ref={ctnRef} className="absolute inset-0 h-full w-full" />;

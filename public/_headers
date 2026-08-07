@@ -10,9 +10,12 @@
   X-DNS-Prefetch-Control: off
 
 # Long-lived caching for static assets (mirror of next.config.mjs).
+# These are content-addressed by convention: an asset whose bytes change ships
+# under a NEW filename. Never overwrite a path in place — a stale copy now
+# persists for a year rather than a day.
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
 /video/*
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Cache-Control: public, max-age=31536000, immutable
 /images/*
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Cache-Control: public, max-age=31536000, immutable

@@ -11,9 +11,39 @@ import { site } from "@/content/site";
 import { BlueprintHull } from "./BlueprintHull";
 import { LoaderReadout } from "./LoaderReadout";
 
-/** Minimum on-screen time (ms) so the cinematic sequence never truncates.
- *  ~6.6s floor + ~1.4s exit wipe ≈ 8s total. */
-const MIN_DURATION = 6600;
+/** Full first-visit floor (ms) so the cinematic sequence never truncates.
+ *  ~6.6s floor + ~1.4s exit wipe ≈ 8s total. The intro timeline below is tuned
+ *  to exactly this length, which is why shortening one without the other does
+ *  nothing: the gate would clear early and then sit waiting on the animation. */
+const FULL_MS = 6600;
+
+/** Repeat-visit floor (ms). Not a truncation — `SCALE` compresses the whole
+ *  timeline to fit, so the same sequence plays as a faster cut. Nobody wants the
+ *  full overture on their third page view of the session. */
+const SHORT_MS = 2200;
+
+/** Session flag marking "this browser tab has already watched the loader".
+ *  sessionStorage, not localStorage: a genuine return visit on a later day
+ *  should still get the full piece. */
+const SEEN_KEY = "cs:loader-seen";
+
+/** Safari in private mode throws on storage access, so both sides are guarded
+ *  and simply fall back to the full sequence. */
+function hasSeenLoader(): boolean {
+  try {
+    return window.sessionStorage.getItem(SEEN_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markLoaderSeen(): void {
+  try {
+    window.sessionStorage.setItem(SEEN_KEY, "1");
+  } catch {
+    /* storage unavailable: every load gets the full sequence, which is safe */
+  }
+}
 
 /** Upper bound (ms) the loader waits for the full-quality hero video to buffer
  *  before revealing anyway, so it can never hang on a slow connection. */
@@ -61,6 +91,16 @@ export function Preloader() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isMobile = window.matchMedia(MOBILE_QUERY).matches;
 
+    // Repeat visits inside the same tab get a compressed cut, not a truncated
+    // one: SCALE multiplies EVERY duration, stagger and position below, so the
+    // choreography is identical and simply plays faster. Shortening the floor
+    // alone would just leave the gate waiting on an unchanged timeline.
+    const minMs = hasSeenLoader() ? SHORT_MS : FULL_MS;
+    const SCALE = minMs / FULL_MS;
+    // The exit wipe is compressed more gently — below about 0.6 it stops
+    // reading as a wipe and starts reading as a flicker.
+    const EXIT_SCALE = Math.max(SCALE, 0.6);
+
     const counterEl = root.querySelector<HTMLElement>(".pl-counter");
     const setCounter = (v: number) => {
       if (counterEl) counterEl.textContent = String(Math.round(v)).padStart(2, "0");
@@ -70,6 +110,9 @@ export function Preloader() {
     const finish = () => {
       if (finished) return;
       finished = true;
+      // Only mark it seen once the sequence has actually played through, so an
+      // abandoned or errored load does not rob the next one of the full piece.
+      markLoaderSeen();
       reveal();
       setDone(true);
     };
@@ -91,20 +134,52 @@ export function Preloader() {
 
       const counter = { v: 0 };
       const tl = gsap.timeline();
-      tl.to(".pl-grid", { opacity: 1, duration: 1.2, ease: "power2.out" }, 0);
-      tl.to(".pl-eyebrow", { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, 0.35);
-      tl.to(".pl-callout", { opacity: 1, y: 0, duration: 0.7, stagger: 0.12, ease: "power2.out" }, 0.5);
-      tl.to(".pl-word", { yPercent: 0, duration: 0.9, stagger: 0.12, ease: "expo.out" }, 0.6);
-      tl.to(".hull-line", { strokeDashoffset: 0, duration: 2.8, stagger: 0.1, ease: "power2.inOut" }, 1.3);
-      tl.to(".hull-dwl", { strokeDashoffset: 0, duration: 1.4, ease: "power2.inOut" }, "<+=0.9");
-      tl.to(".hull-label", { opacity: 1, duration: 0.5, stagger: 0.05, ease: "power2.out" }, 2.7);
-      tl.to(counter, { v: 99, duration: 6.0, ease: "power1.inOut", onUpdate: () => setCounter(counter.v) }, 0.6);
+      // Every number below is scaled, including the relative position on
+      // .hull-dwl — miss one and the repeat-visit cut desynchronises.
+      tl.to(".pl-grid", { opacity: 1, duration: 1.2 * SCALE, ease: "power2.out" }, 0);
+      tl.to(".pl-eyebrow", { opacity: 1, y: 0, duration: 0.7 * SCALE, ease: "power2.out" }, 0.35 * SCALE);
+      tl.to(
+        ".pl-callout",
+        { opacity: 1, y: 0, duration: 0.7 * SCALE, stagger: 0.12 * SCALE, ease: "power2.out" },
+        0.5 * SCALE,
+      );
+      tl.to(
+        ".pl-word",
+        { yPercent: 0, duration: 0.9 * SCALE, stagger: 0.12 * SCALE, ease: "expo.out" },
+        0.6 * SCALE,
+      );
+      tl.to(
+        ".hull-line",
+        { strokeDashoffset: 0, duration: 2.8 * SCALE, stagger: 0.1 * SCALE, ease: "power2.inOut" },
+        1.3 * SCALE,
+      );
+      tl.to(
+        ".hull-dwl",
+        { strokeDashoffset: 0, duration: 1.4 * SCALE, ease: "power2.inOut" },
+        `<+=${0.9 * SCALE}`,
+      );
+      tl.to(
+        ".hull-label",
+        { opacity: 1, duration: 0.5 * SCALE, stagger: 0.05 * SCALE, ease: "power2.out" },
+        2.7 * SCALE,
+      );
+      tl.to(
+        counter,
+        { v: 99, duration: 6.0 * SCALE, ease: "power1.inOut", onUpdate: () => setCounter(counter.v) },
+        0.6 * SCALE,
+      );
       mainTl = tl;
     }, root);
 
     // reduced motion: hold briefly, then fade out to the hero
     if (reduced) {
-      gsap.to(root, { opacity: 0, duration: 0.5, delay: 1.5, ease: "power2.in", onComplete: finish });
+      gsap.to(root, {
+        opacity: 0,
+        duration: 0.5,
+        delay: 1.5 * SCALE,
+        ease: "power2.in",
+        onComplete: finish,
+      });
       return;
     }
 
@@ -112,10 +187,22 @@ export function Preloader() {
       ctx.add(() => {
         const counter = { v: 99 };
         const ex = gsap.timeline({ onComplete: finish });
-        ex.to(counter, { v: 100, duration: 0.4, onUpdate: () => setCounter(counter.v) }, 0);
-        ex.to([".hull-line", ".hull-dwl"], { opacity: 0, duration: 0.6, ease: "power2.in" }, 0.1);
-        ex.to([".pl-fade", ".pl-grid"], { opacity: 0, duration: 0.55, ease: "power2.in" }, 0.15);
-        ex.to(root, { clipPath: "inset(0% 0% 100% 0%)", duration: 0.95, ease: "power4.inOut" }, 0.45);
+        ex.to(counter, { v: 100, duration: 0.4 * EXIT_SCALE, onUpdate: () => setCounter(counter.v) }, 0);
+        ex.to(
+          [".hull-line", ".hull-dwl"],
+          { opacity: 0, duration: 0.6 * EXIT_SCALE, ease: "power2.in" },
+          0.1 * EXIT_SCALE,
+        );
+        ex.to(
+          [".pl-fade", ".pl-grid"],
+          { opacity: 0, duration: 0.55 * EXIT_SCALE, ease: "power2.in" },
+          0.15 * EXIT_SCALE,
+        );
+        ex.to(
+          root,
+          { clipPath: "inset(0% 0% 100% 0%)", duration: 0.95 * EXIT_SCALE, ease: "power4.inOut" },
+          0.45 * EXIT_SCALE,
+        );
       });
     };
 
@@ -123,7 +210,9 @@ export function Preloader() {
       fontsReady(4000),
       imagesReady([isMobile ? site.heroVideo.mobilePoster.jpg : site.heroVideo.poster], 4000),
       heroReady(isMobile ? MOBILE_HERO_TIMEOUT : HERO_TIMEOUT),
-      delay(MIN_DURATION),
+      // The asset gate above stays the binding constraint on a slow link; this
+      // is only the artistic floor, and it is the part that shortens on repeat.
+      delay(minMs),
     ])
       .then(() => {
         if (mainTl && mainTl.progress() < 1) {

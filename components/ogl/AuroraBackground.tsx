@@ -32,7 +32,17 @@ function AuroraLive() {
       setInView(true);
       return;
     }
-    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { rootMargin: "120px" });
+    // Read the LAST record, not the first: one callback can carry several
+    // coalesced entries for the same target and the earlier ones are stale, so
+    // destructuring `[entry]` can latch the wrong visibility and leave the
+    // WebGL loop running offscreen (or stopped on screen).
+    const io = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[entries.length - 1];
+        if (entry) setInView(entry.isIntersecting);
+      },
+      { rootMargin: "120px" },
+    );
     io.observe(el);
     return () => io.disconnect();
   }, []);
