@@ -40,45 +40,50 @@ export function MarinePage({ content }: { content: ServicePageContent }) {
         <section data-nav-theme="light" className="bg-surface">
           <div className="u-shell py-[clamp(4.5rem,10vh,8rem)]">
             <SectionIndex index={intro.index} label={intro.label} variant="onLight" />
-            <div className="mt-10 grid gap-x-16 gap-y-8 lg:grid-cols-12">
-              {/* Heading spans the full width; below it the copy and a
-                  CONTAINED image sit side by side. Previously the heading and
-                  image shared the wide 7-column track while three paragraphs
-                  were squeezed into the narrow 5-column one, which made the
-                  image the widest element on the page below the hero. */}
-              <h2 className="font-sans text-[clamp(1.5rem,3vw,2.5rem)] font-medium leading-[1.14] tracking-[-0.01em] text-navy lg:col-span-12">
-                <TextReveal text={content.intro.heading} stagger={0.022} />
-              </h2>
-              <Reveal className="flex flex-col gap-4 lg:col-span-6">
-                {content.intro.paragraphs.map((p) => (
-                  <p key={p} className="text-[0.9375rem] leading-[1.75] text-slate">
-                    {p}
-                  </p>
-                ))}
-              </Reveal>
+            {/* Two balanced halves: ALL the copy on the left, the image filling
+                the right. The previous version ran the heading across all twelve
+                columns and put the copy in 1-6 and the image in 8-12, so the
+                text column ran out well above the bottom of the image and left a
+                dead pocket under it before the chips. Keeping the chips inside
+                the left column is what makes the two halves read as halves
+                rather than as a grid with an orphan row, and `items-center`
+                balances them whichever is taller. */}
+            <div className="mt-10 grid gap-x-16 gap-y-10 lg:grid-cols-12 lg:items-center">
+              <div className={cn(content.introImage ? "lg:col-span-6" : "lg:col-span-12")}>
+                <h2 className="font-sans text-[clamp(1.5rem,3vw,2.5rem)] font-medium leading-[1.14] tracking-[-0.01em] text-navy">
+                  <TextReveal text={content.intro.heading} stagger={0.022} />
+                </h2>
+                <Reveal className="mt-8 flex flex-col gap-4">
+                  {content.intro.paragraphs.map((p) => (
+                    <p key={p} className="text-[0.9375rem] leading-[1.75] text-slate">
+                      {p}
+                    </p>
+                  ))}
+                </Reveal>
+                {content.intro.chips?.length ? (
+                  <Reveal selector="[data-chip]" stagger={0.06} className="mt-10 flex flex-wrap gap-2">
+                    {content.intro.chips.map((chip) => (
+                      <span
+                        key={chip}
+                        data-chip
+                        className="border border-navy/15 px-3 py-1.5 font-mono text-[0.5625rem] uppercase tracking-[0.2em] text-slate"
+                      >
+                        {chip}
+                      </span>
+                    ))}
+                  </Reveal>
+                ) : null}
+              </div>
               {content.introImage ? (
-                <Reveal className="lg:col-span-5 lg:col-start-8" y={32}>
+                <Reveal className="lg:col-span-6" y={32}>
                   <FramedImage image={content.introImage} ratio="aspect-[4/3]" />
                 </Reveal>
               ) : null}
             </div>
-            {content.intro.chips?.length ? (
-              <Reveal selector="[data-chip]" stagger={0.06} className="mt-12 flex flex-wrap gap-2">
-                {content.intro.chips.map((chip) => (
-                  <span
-                    key={chip}
-                    data-chip
-                    className="border border-navy/15 px-3 py-1.5 font-mono text-[0.5625rem] uppercase tracking-[0.2em] text-slate"
-                  >
-                    {chip}
-                  </span>
-                ))}
-              </Reveal>
-            ) : null}
           </div>
         </section>
 
-        {/* four-tile bento, identical on every Marine page */}
+        {/* five-tile bento, identical on every Marine page */}
         {content.feature?.images.length ? (
           <MarineGrid images={content.feature.images} caption={content.feature.caption} />
         ) : null}
@@ -298,7 +303,8 @@ function FramedImage({ image, ratio }: { image: ServiceImage; ratio: string }) {
       <Pic
         image={image}
         // Roughly a five-twelfths column at lg, full width below that.
-        sizes="(min-width: 1024px) 42vw, 100vw"
+        // Half the shell at lg+, full width when the layout stacks.
+        sizes="(min-width: 1024px) 46vw, 100vw"
         imgClassName={cn("w-full object-cover", ratio)}
       />
     </div>

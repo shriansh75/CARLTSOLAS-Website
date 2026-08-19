@@ -51,27 +51,37 @@ export const lifeboatManufacturingPage: ServicePageContent = {
     jpg: "/images/marine/lifeboat-intro.jpg",
     alt: "An enclosed lifeboat seated in its davit cradle on an offshore installation, open sea beyond.",
   },
+  // Five images: the bento's feature tile spans 2x2 of a 4x2 grid, so four
+  // entries left the bottom-right cell empty.
   feature: {
     images: [
       {
-        webp: "/images/marine/tile-lifeboat-deployment.webp",
-        jpg: "/images/marine/tile-lifeboat-deployment.jpg",
-        alt: "An enclosed lifeboat being lowered from its davit during a launch exercise.",
+        webp: "/images/marine/lb-deployment.webp",
+        jpg: "/images/marine/lb-deployment.jpg",
+        alt: "A totally enclosed lifeboat seated in its davit cradle above the sea.",
       },
       {
-        webp: "/images/marine/lifeboat-service.webp",
-        jpg: "/images/marine/lifeboat-service.jpg",
-        alt: "A survey team attending a lifeboat at its davit, checking the launching appliance and release gear.",
+        // A station code and a helmet brand were blurred out of the master.
+        webp: "/images/marine/lb-service-crew.webp",
+        jpg: "/images/marine/lb-service-crew.jpg",
+        alt: "Two technicians on rope access servicing the release gear of an enclosed lifeboat suspended over the water.",
       },
       {
-        webp: "/images/marine/tile-lifeboat-crew.webp",
-        jpg: "/images/marine/tile-lifeboat-crew.jpg",
-        alt: "Technicians servicing a lifeboat and its launching appliance on deck.",
+        webp: "/images/marine/lb-davit.webp",
+        jpg: "/images/marine/lb-davit.jpg",
+        alt: "A partially enclosed lifeboat stowed in gravity davits at a ship's side.",
       },
       {
-        webp: "/images/marine/tile-lifeboat-launch.webp",
-        jpg: "/images/marine/tile-lifeboat-launch.jpg",
-        alt: "A survival craft suspended on its falls above the water during a load test.",
+        // The 4x upscale of this master invented ship-name-shaped lettering on
+        // the wheelhouse that does not exist in the original. It is blurred out.
+        webp: "/images/marine/lb-underway.webp",
+        jpg: "/images/marine/lb-underway.jpg",
+        alt: "An enclosed lifeboat underway at sea under its own power.",
+      },
+      {
+        webp: "/images/marine/lb-ga-drawing.webp",
+        jpg: "/images/marine/lb-ga-drawing.jpg",
+        alt: "General arrangement drawing of a fast rescue craft, showing the flying bridge and main deck plan views.",
       },
     ],
     caption: "SERVICING · LOAD TESTING · RELEASE GEAR · INSTALLATION AND COMMISSIONING",

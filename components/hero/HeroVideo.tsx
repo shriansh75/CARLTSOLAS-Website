@@ -230,6 +230,12 @@ export function HeroVideo() {
   };
 
   // Handheld gets the vessel still; everything else gets the video poster frame.
+  //
+  // Both carry intrinsic width/height. These posters live under /video rather
+  // than /images, so they sit outside lib/imageManifest.ts and cannot route
+  // through `Pic` — which is exactly why they were the last two <img> on the
+  // site with no dimensions, and why the manifest gate does not catch them.
+  // Keep these numbers in step if the posters are ever re-encoded.
   const posterEl = isMobile ? (
     <picture>
       <source srcSet={mobilePoster.webp} type="image/webp" />
@@ -238,6 +244,8 @@ export function HeroVideo() {
         src={mobilePoster.jpg}
         alt=""
         aria-hidden
+        width={1152}
+        height={1536}
         fetchPriority="high"
         decoding="async"
         className="absolute inset-0 h-full w-full object-cover object-center"
@@ -251,6 +259,8 @@ export function HeroVideo() {
         src={poster}
         alt=""
         aria-hidden
+        width={1920}
+        height={1072}
         fetchPriority="high"
         decoding="async"
         className="absolute inset-0 h-full w-full object-cover object-center"

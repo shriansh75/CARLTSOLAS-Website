@@ -87,8 +87,10 @@ export interface ServicePageContent {
    */
   introImage?: ServiceImage;
   /**
-   * Contained image band between sections. One image reads full width; two
-   * read as a pair. `caption` is a short mono line, not a sentence.
+   * The bento band between the intro and the body sections. Supply exactly
+   * FIVE images: the grid is 4 columns x 2 rows and the first tile spans 2x2,
+   * so four entries leave the bottom-right cell empty and it renders as a pale
+   * hairline rectangle. `caption` is a short mono line, not a sentence.
    */
   feature?: {
     images: ServiceImage[];

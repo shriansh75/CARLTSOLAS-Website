@@ -17,39 +17,49 @@ export const marinePage: ServicePageContent = {
   lede:
     "CARLTSOLAS is a technology company built on a marine engineering foundation. Where a project calls for marine and maritime work, we deliver it together with SOLAS MODU Marine Services.",
   heroImage: {
-    // NOTE the filename: /images/* is served with a one-day cache, so an image
-    // whose content changes must take a NEW path. Overwriting a path in place
-    // served stale bytes to anyone who had visited before.
-    webp: "/images/marine/hero-sunset.webp",
-    jpg: "/images/marine/hero-sunset.jpg",
-    alt: "A bulk carrier under way at sunset, silhouetted against an open sky.",
+    // NOTE the filename: /images/* is immutable for a year, so an image whose
+    // content changes must take a NEW path. Overwriting a path in place served
+    // stale bytes to every returning visitor.
+    webp: "/images/marine/hero-oilgas.webp",
+    jpg: "/images/marine/hero-oilgas.jpg",
+    alt: "An offshore oil and gas production platform at twilight, its flare boom to one side and a walkway bridge running out across the water.",
   },
   introImage: {
     webp: "/images/marine/marine-intro.webp",
     jpg: "/images/marine/marine-intro.jpg",
     alt: "Two offshore crew in survival coveralls at the rail of a platform, looking out over the sea.",
   },
+  // Five images, not four. The bento is a 4x2 grid whose feature tile spans
+  // 2x2, so four entries left the bottom-right cell empty and it rendered as a
+  // pale hairline rectangle. Five fill it exactly.
   feature: {
     images: [
       {
-        webp: "/images/marine/ndt-primary.webp",
-        jpg: "/images/marine/ndt-primary.jpg",
-        alt: "A technician taking an ultrasonic thickness reading on a steel structure with a handheld flaw detector.",
+        webp: "/images/marine/mo-rig-sunset.webp",
+        jpg: "/images/marine/mo-rig-sunset.jpg",
+        alt: "A jack-up drilling rig standing on its legs at sunset, a supply vessel on the horizon.",
       },
       {
-        webp: "/images/marine/tile-offshore-rig.webp",
-        jpg: "/images/marine/tile-offshore-rig.jpg",
-        alt: "A jack-up drilling rig standing on its legs in open water.",
+        webp: "/images/marine/mo-confined-space.webp",
+        jpg: "/images/marine/mo-confined-space.jpg",
+        alt: "A technician in a gas-tight suit and breathing apparatus entering a tank hatch on deck.",
       },
       {
-        webp: "/images/marine/tile-ultrasonic.webp",
-        jpg: "/images/marine/tile-ultrasonic.jpg",
-        alt: "Ultrasonic testing equipment in use on a steel surface.",
+        webp: "/images/marine/mo-ultrasonic.webp",
+        jpg: "/images/marine/mo-ultrasonic.jpg",
+        alt: "An ultrasonic flaw detector and probe in use on a steel plate.",
       },
       {
-        webp: "/images/marine/tile-rig-tanker.webp",
-        jpg: "/images/marine/tile-rig-tanker.jpg",
-        alt: "An offshore rig at sea with a tanker alongside.",
+        webp: "/images/marine/mo-co2-bank.webp",
+        jpg: "/images/marine/mo-co2-bank.jpg",
+        alt: "A bank of CO2 cylinders strapped in their frame with the actuation manifold above.",
+      },
+      {
+        // Published with the individual's consent on file. The alt text names
+        // nobody: there is no reason to put an employee's name in page source.
+        webp: "/images/marine/mo-crew-night.webp",
+        jpg: "/images/marine/mo-crew-night.jpg",
+        alt: "A SOLAS MODU technician on an offshore structure at night.",
       },
     ],
     caption: "NON-DESTRUCTIVE TESTING · THICKNESS MEASUREMENT · WELD AND COATING INSPECTION",

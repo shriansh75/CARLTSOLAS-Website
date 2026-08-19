@@ -36,36 +36,45 @@ export const flagStateInspectionsPage: ServicePageContent = {
   lede:
     "Independent, convention-wide inspection of ships flying your flag, carried out by qualified surveyors and reported in a form your administration can act on.",
   heroImage: {
-    webp: "/images/marine/hero-tanker.webp",
-    jpg: "/images/marine/hero-tanker.jpg",
-    alt: "The deck of a tanker under way, cargo manifold piping running forward toward the bow.",
+    webp: "/images/marine/fsi-hero-engineroom.webp",
+    jpg: "/images/marine/fsi-hero-engineroom.jpg",
+    alt: "A ship's main engine seen along the engine room platform, cylinder covers in a row beneath the insulated exhaust receiver.",
   },
   introImage: {
-    webp: "/images/marine/fsi-intro.webp",
-    jpg: "/images/marine/fsi-intro.jpg",
-    alt: "Crew testing a fire main on deck, the jet arcing out over the water, seen from high above the vessel.",
+    webp: "/images/marine/fsi-lsa-locker.webp",
+    jpg: "/images/marine/fsi-lsa-locker.jpg",
+    alt: "An open deck locker of lifejackets stowed for the liferafts, stencilled with its contents.",
   },
+  // Five images: the bento's feature tile spans 2x2 of a 4x2 grid, so four
+  // entries left the bottom-right cell empty.
   feature: {
     images: [
       {
-        webp: "/images/marine/flag-state-inspections.webp",
-        jpg: "/images/marine/flag-state-inspections.jpg",
-        alt: "A ship's machinery space along the length of the engine platform, cylinder heads and access stairs in view.",
+        // Cropped past the vessel's callsign, which was legible on the lifeboat
+        // bow in the master. Never re-export this one without that crop.
+        webp: "/images/marine/fsi-deck-washdown.webp",
+        jpg: "/images/marine/fsi-deck-washdown.jpg",
+        alt: "Crew testing a fire main on the deck of an offshore support vessel, the jet arcing out over the water.",
       },
       {
-        webp: "/images/marine/tile-confined-space.webp",
-        jpg: "/images/marine/tile-confined-space.jpg",
-        alt: "A marine engineer working inside a confined space aboard a vessel.",
+        webp: "/images/marine/fsi-boat-deck.webp",
+        jpg: "/images/marine/fsi-boat-deck.jpg",
+        alt: "Crew on a boat deck attending a lifeboat in its davit.",
       },
       {
-        webp: "/images/marine/hull-survey.webp",
-        jpg: "/images/marine/hull-survey.jpg",
-        alt: "A vessel's hull and propeller below the waterline during an underwater survey.",
+        webp: "/images/marine/fsi-extinguishers.webp",
+        jpg: "/images/marine/fsi-extinguishers.jpg",
+        alt: "The heads of portable fire extinguishers, pressure gauges and squeeze levers in close view.",
       },
       {
-        webp: "/images/marine/tile-lsa-stowage.webp",
-        jpg: "/images/marine/tile-lsa-stowage.jpg",
-        alt: "Life jackets stowed in their deck locker, ready for inspection.",
+        webp: "/images/marine/fsi-rov.webp",
+        jpg: "/images/marine/fsi-rov.jpg",
+        alt: "A remotely operated vehicle inspecting a vessel's hull below the waterline.",
+      },
+      {
+        webp: "/images/marine/fsi-terminal.webp",
+        jpg: "/images/marine/fsi-terminal.jpg",
+        alt: "A container terminal seen from above, gantry cranes working ships alongside.",
       },
     ],
     caption: "HULL · MACHINERY · LIFE-SAVING · POLLUTION PREVENTION · MANAGEMENT SYSTEMS",

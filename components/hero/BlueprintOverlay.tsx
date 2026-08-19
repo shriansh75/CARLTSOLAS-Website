@@ -9,16 +9,22 @@ export function BlueprintOverlay() {
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden>
       {/* full-height bottom scrim, kept light so the footage colour reads through */}
-      <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-ink/12 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink/45 via-ink/10 to-transparent" />
       {/* Hard anchor under the wordmark.
-          It used to be h-[30%], which only reached y≈630 on a 900px viewport
-          while the wordmark sits at roughly y 520-660 — so most of the largest
-          white type on the site had nothing behind it but the light /60 scrim
-          above. Measured against the live video the wordmark came out at
-          2.96:1, 3.04:1 and 3.80:1 on different frames: straddling the 3:1
+          History matters here, because this has been wrong in both directions.
+          At h-[30%] it only reached y≈630 on a 900px viewport while the wordmark
+          sits at roughly y 520-660, so the largest white type on the site had
+          almost nothing behind it: measured against the live video it came out
+          at 2.96 / 3.04 / 3.80:1 on different frames, straddling the 3:1
           large-text floor and crossing it depending on how much wake was in
-          shot. Taller, with a mid stop, so the whole wordmark is seated. */}
-      <div className="absolute inset-x-0 bottom-0 h-[52%] bg-gradient-to-t from-ink/90 via-ink/55 to-transparent" />
+          shot. Raising it to h-[52%] from-ink/90 via-ink/55 fixed that (4.76 to
+          6.05:1) but flattened the vessel and the waves — far more scrim than
+          legibility actually needed.
+          These values are the lightest that still clear the floor with real
+          margin on a moving background. Verified by sampling three separate
+          video frames; see CLAUDE.md "Hero legibility is MEASURED". If you
+          change them, re-measure — do not eyeball it. */}
+      <div className="absolute inset-x-0 bottom-0 h-[44%] bg-gradient-to-t from-ink/55 via-ink/30 to-transparent" />
       {/* top header scrim — a touch stronger so the nav links stay legible */}
       <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-ink/62 via-ink/16 to-transparent" />
       {/* soft vignette */}
