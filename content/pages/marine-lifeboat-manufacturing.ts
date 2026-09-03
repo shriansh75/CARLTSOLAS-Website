@@ -72,16 +72,16 @@ export const lifeboatManufacturingPage: ServicePageContent = {
         alt: "A partially enclosed lifeboat stowed in gravity davits at a ship's side.",
       },
       {
+        webp: "/images/marine/lb-ga-drawing.webp",
+        jpg: "/images/marine/lb-ga-drawing.jpg",
+        alt: "General arrangement drawing of a fast rescue craft, showing the flying bridge and main deck plan views.",
+      },
+      {
         // The 4x upscale of this master invented ship-name-shaped lettering on
         // the wheelhouse that does not exist in the original. It is blurred out.
         webp: "/images/marine/lb-underway.webp",
         jpg: "/images/marine/lb-underway.jpg",
         alt: "An enclosed lifeboat underway at sea under its own power.",
-      },
-      {
-        webp: "/images/marine/lb-ga-drawing.webp",
-        jpg: "/images/marine/lb-ga-drawing.jpg",
-        alt: "General arrangement drawing of a fast rescue craft, showing the flying bridge and main deck plan views.",
       },
     ],
     caption: "SERVICING · LOAD TESTING · RELEASE GEAR · INSTALLATION AND COMMISSIONING",

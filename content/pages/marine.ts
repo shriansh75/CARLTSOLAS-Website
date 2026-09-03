@@ -55,11 +55,12 @@ export const marinePage: ServicePageContent = {
         alt: "A bank of CO2 cylinders strapped in their frame with the actuation manifold above.",
       },
       {
-        // Published with the individual's consent on file. The alt text names
-        // nobody: there is no reason to put an employee's name in page source.
-        webp: "/images/marine/mo-crew-night.webp",
-        jpg: "/images/marine/mo-crew-night.jpg",
-        alt: "A SOLAS MODU technician on an offshore structure at night.",
+        // Right-biased 960x960 crop of the master: the left of the frame carried
+        // stencilled characters of the kind used to mark a vessel or hull, so
+        // the crop is also the redaction. Do not re-export it uncropped.
+        webp: "/images/marine/mo-safety-kit.webp",
+        jpg: "/images/marine/mo-safety-kit.jpg",
+        alt: "Survival craft equipment laid out for inspection: compass, torch, tool roll, first aid case and water containers.",
       },
     ],
     caption: "NON-DESTRUCTIVE TESTING · THICKNESS MEASUREMENT · WELD AND COATING INSPECTION",

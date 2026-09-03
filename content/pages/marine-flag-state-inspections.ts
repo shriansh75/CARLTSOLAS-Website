@@ -50,11 +50,11 @@ export const flagStateInspectionsPage: ServicePageContent = {
   feature: {
     images: [
       {
-        // Cropped past the vessel's callsign, which was legible on the lifeboat
-        // bow in the master. Never re-export this one without that crop.
-        webp: "/images/marine/fsi-deck-washdown.webp",
-        jpg: "/images/marine/fsi-deck-washdown.jpg",
-        alt: "Crew testing a fire main on the deck of an offshore support vessel, the jet arcing out over the water.",
+        // Feature tile. Licensed by the client. Carries visible third-party
+        // carrier liveries; promoting it here was a deliberate client choice.
+        webp: "/images/marine/fsi-port-terminal.webp",
+        jpg: "/images/marine/fsi-port-terminal.jpg",
+        alt: "A container terminal seen from above, gantry cranes working ships alongside.",
       },
       {
         webp: "/images/marine/fsi-boat-deck.webp",
@@ -62,19 +62,28 @@ export const flagStateInspectionsPage: ServicePageContent = {
         alt: "Crew on a boat deck attending a lifeboat in its davit.",
       },
       {
-        webp: "/images/marine/fsi-extinguishers.webp",
-        jpg: "/images/marine/fsi-extinguishers.jpg",
-        alt: "The heads of portable fire extinguishers, pressure gauges and squeeze levers in close view.",
+        // AI-generated, and unlike the previous synthetic image on this site it
+        // is CRYPTOGRAPHICALLY SIGNED as such (C2PA, OpenAI gpt-image), so
+        // platforms that read Content Credentials will badge it. It also shows
+        // placeholder Cospas-Sarsat markings. Ships at the client's explicit
+        // instruction; see docs/solas-modu-capability-record.md.
+        webp: "/images/marine/fsi-epirb.webp",
+        jpg: "/images/marine/fsi-epirb.jpg",
+        alt: "An emergency position indicating radio beacon in its float-free bracket, the sea beyond.",
       },
       {
-        webp: "/images/marine/fsi-rov.webp",
-        jpg: "/images/marine/fsi-rov.jpg",
-        alt: "A remotely operated vehicle inspecting a vessel's hull below the waterline.",
+        // Full frame at the client's instruction, third-party instrument
+        // branding included.
+        webp: "/images/marine/fsi-corrosion-scanner.webp",
+        jpg: "/images/marine/fsi-corrosion-scanner.jpg",
+        alt: "A motorised corrosion scanner clamped to a pipe alongside a portable ultrasonic flaw detector.",
       },
       {
-        webp: "/images/marine/fsi-terminal.webp",
-        jpg: "/images/marine/fsi-terminal.jpg",
-        alt: "A container terminal seen from above, gantry cranes working ships alongside.",
+        // Cropped past the vessel's callsign, which was legible on the lifeboat
+        // bow in the master. Never re-export this one without that crop.
+        webp: "/images/marine/fsi-deck-washdown.webp",
+        jpg: "/images/marine/fsi-deck-washdown.jpg",
+        alt: "Crew testing a fire main on the deck of an offshore support vessel, the jet arcing out over the water.",
       },
     ],
     caption: "HULL · MACHINERY · LIFE-SAVING · POLLUTION PREVENTION · MANAGEMENT SYSTEMS",
